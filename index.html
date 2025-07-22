@@ -633,6 +633,153 @@
         /* Animation delays for staggered loading */
         .map-container { animation-delay: 0.9s; }
         .info-panel { animation-delay: 1.2s; }
+
+        /* Photo Gallery Modal */
+        .photo-gallery-modal {
+            position: fixed;
+            z-index: 1001;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.8);
+        }
+
+        .photo-gallery-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 900px;
+            border-radius: var(--border-radius-lg);
+            position: relative;
+        }
+
+        .close-gallery {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close-gallery:hover,
+        .close-gallery:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .gallery-photos {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .gallery-photo {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: var(--border-radius-sm);
+        }
+
+        .beach-actions {
+            margin-top: 1rem;
+            display: flex;
+            gap: 1rem;
+        }
+
+        .action-btn {
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            transition: var(--transition-smooth);
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+
+        /* Add Memory Modal */
+        .memory-modal {
+            position: fixed;
+            z-index: 1002;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.8);
+        }
+
+        .memory-modal-content {
+            background-color: #fefefe;
+            margin: 10% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 500px;
+            border-radius: var(--border-radius-lg);
+            position: relative;
+        }
+
+        .close-memory-modal {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close-memory-modal:hover,
+        .close-memory-modal:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        #add-memory-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        #add-memory-form input[type="file"] {
+            padding: 0.5rem;
+            border: 1px solid #ccc;
+            border-radius: var(--border-radius-sm);
+        }
+
+        #add-memory-form textarea {
+            padding: 0.5rem;
+            border: 1px solid #ccc;
+            border-radius: var(--border-radius-sm);
+            resize: vertical;
+        }
+
+        #add-memory-form button {
+            background: var(--success-gradient);
+            color: white;
+            border: none;
+            padding: 0.75rem;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            transition: var(--transition-smooth);
+        }
+
+        #add-memory-form button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
     </style>
 </head>
 <body>
@@ -708,11 +855,34 @@
         </aside>
     </main>
 
+    <!-- Photo Gallery Modal -->
+    <div id="photo-gallery" class="photo-gallery-modal" style="display: none;">
+        <div class="photo-gallery-content">
+            <span class="close-gallery">&times;</span>
+            <h2>Beach Memories</h2>
+            <div id="gallery-photos" class="gallery-photos"></div>
+        </div>
+    </div>
+
+    <!-- Add Memory Modal -->
+    <div id="memory-modal" class="memory-modal" style="display: none;">
+        <div class="memory-modal-content">
+            <span class="close-memory-modal">&times;</span>
+            <h2>Add a Memory</h2>
+            <form id="add-memory-form">
+                <input type="file" id="memory-photo-input" accept="image/*" required>
+                <textarea id="memory-note-input" placeholder="Add a note..."></textarea>
+                <button type="submit">Add Memory</button>
+            </form>
+        </div>
+    </div>
+
     <!-- Leaflet JavaScript library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
     <script>
         // Ensure the DOM is fully loaded before hiding the loading screen and initializing the map
         document.addEventListener('DOMContentLoaded', function() {
+            loadBeaches(); // Load beaches from local storage
             // Simulate a loading delay for better user experience
             setTimeout(() => {
                 document.getElementById('loadingScreen').classList.add('hidden');
@@ -755,7 +925,8 @@
                     description: "Famous for its crescent-shaped coastline and iconic lighthouse, Kovalam is Kerala's crown jewel of beach tourism.",
                     features: ["Lighthouse", "Ayurvedic Spas", "Surfing", "Fine Dining"],
                     rating: 4.7,
-                    reviews: 2847
+                    reviews: 2847,
+                    memories: []
                 },
                 {
                     name: "Varkala Beach",
@@ -765,7 +936,8 @@
                     description: "Known as Papanasam Beach, this cliff-top paradise offers breathtaking views and natural mineral springs with healing properties.",
                     features: ["Cliff Views", "Mineral Springs", "Yoga Retreats", "Sunset Cafes"],
                     rating: 4.6,
-                    reviews: 1923
+                    reviews: 1923,
+                    memories: []
                 },
                 {
                     name: "Alleppey Beach",
@@ -775,7 +947,8 @@
                     description: "Gateway to the enchanting backwaters, this beach perfectly combines coastal beauty with serene lagoon experiences.",
                     features: ["Backwaters", "Houseboats", "Historic Pier", "Lighthouse"],
                     rating: 4.5,
-                    reviews: 3156
+                    reviews: 3156,
+                    memories: []
                 },
                 {
                     name: "Cherai Beach",
@@ -785,7 +958,8 @@
                     description: "A pristine stretch of golden sand with calm waters, perfect for swimming and peaceful contemplation.",
                     features: ["Golden Sand", "Swimming", "Backwaters", "Paddy Fields"],
                     rating: 4.4,
-                    reviews: 1567
+                    reviews: 1567,
+                    memories: []
                 },
                 {
                     name: "Marari Beach",
@@ -795,7 +969,8 @@
                     description: "An untouched paradise with swaying palms and pristine waters, offering the perfect escape from urban life.",
                     features: ["Pristine Waters", "Coconut Groves", "Fishing Village", "Peaceful"],
                     rating: 4.8,
-                    reviews: 1234
+                    reviews: 1234,
+                    memories: []
                 },
                 {
                     name: "Bekal Beach",
@@ -805,7 +980,8 @@
                     description: "Home to the magnificent Bekal Fort, this beach combines historical grandeur with natural beauty.",
                     features: ["Historic Fort", "Archaeology", "Photography", "Trekking"],
                     rating: 4.6,
-                    reviews: 2087
+                    reviews: 2087,
+                    memories: []
                 },
                 {
                     name: "Kannur Beach",
@@ -815,7 +991,8 @@
                     description: "Known for its cultural richness and pristine coastline, offering a perfect blend of tradition and natural beauty.",
                     features: ["Cultural Sites", "Clean Waters", "Local Cuisine", "Theyyam"],
                     rating: 4.3,
-                    reviews: 1456
+                    reviews: 1456,
+                    memories: []
                 },
                 {
                     name: "Muzhappilangad Beach",
@@ -825,7 +1002,8 @@
                     description: "Kerala's longest drive-in beach, where you can literally drive on the sand and enjoy unique beach experiences.",
                     features: ["Drive-in Beach", "Adventure Sports", "Unique Experience", "Photography"],
                     rating: 4.5,
-                    reviews: 1789
+                    reviews: 1789,
+                    memories: []
                 },
                 {
                     name: "Kappad Beach",
@@ -835,7 +1013,8 @@
                     description: "Historic beach where Vasco da Gama first landed in India, combining historical significance with natural beauty.",
                     features: ["Historical Site", "Vasco da Gama", "Rock Formations", "Peaceful"],
                     rating: 4.2,
-                    reviews: 1123
+                    reviews: 1123,
+                    memories: []
                 },
                 {
                     name: "Payyambalam Beach",
@@ -845,7 +1024,8 @@
                     description: "A beautiful beach with a well-maintained park, perfect for families and evening strolls.",
                     features: ["Beach Park", "Family Friendly", "Sculptures", "Evening Walks"],
                     rating: 4.4,
-                    reviews: 1334
+                    reviews: 1334,
+                    memories: []
                 },
                 {
                     name: "Kizhunna Beach",
@@ -855,7 +1035,8 @@
                     description: "A hidden gem with black rocks and clear waters, offering a unique and tranquil beach experience.",
                     features: ["Black Rocks", "Clear Waters", "Secluded", "Photography"],
                     rating: 4.5,
-                    reviews: 892
+                    reviews: 892,
+                    memories: []
                 },
                 {
                     name: "Thirumullavaram Beach",
@@ -865,7 +1046,8 @@
                     description: "A pristine beach with golden sand and gentle waves, perfect for a peaceful getaway.",
                     features: ["Golden Sand", "Gentle Waves", "Peaceful", "Pristine"],
                     rating: 4.3,
-                    reviews: 756
+                    reviews: 756,
+                    memories: []
                 },
                 {
                     name: "Shanghumukham Beach",
@@ -875,7 +1057,8 @@
                     description: "Located near Trivandrum airport, this beach offers beautiful sunsets and modern amenities.",
                     features: ["Sunset Views", "Modern Amenities", "Airport Proximity", "Restaurants"],
                     rating: 4.1,
-                    reviews: 1678
+                    reviews: 1678,
+                    memories: []
                 },
                 {
                     name: "Nattika Beach",
@@ -885,7 +1068,8 @@
                     description: "A serene beach with minimal crowds, offering an authentic Kerala coastal experience.",
                     features: ["Minimal Crowds", "Authentic Experience", "Fishing", "Tranquil"],
                     rating: 4.4,
-                    reviews: 543
+                    reviews: 543,
+                    memories: []
                 },
                 {
                     name: "Kappil Beach",
@@ -895,7 +1079,8 @@
                     description: "Where backwaters meet the sea, creating a unique landscape perfect for kayaking and exploration.",
                     features: ["Backwater Confluence", "Kayaking", "Unique Landscape", "Exploration"],
                     rating: 4.6,
-                    reviews: 1087
+                    reviews: 1087,
+                    memories: []
                 }
             ];
 
@@ -985,6 +1170,10 @@
                                 <span class="stars">${stars}</span>
                                 <span class="rating-text">${beach.rating}/5 (${beach.reviews} reviews)</span>
                             </div>
+                            <div class="beach-actions">
+                                <button class="action-btn add-memory-btn">Add Memory</button>
+                                <button class="action-btn view-memories-btn">View Memories</button>
+                            </div>
                         </div>
                     </div>
                 `;
@@ -1016,6 +1205,19 @@
                 // Add click event for logging (can be extended for analytics)
                 marker.on('click', function(e) {
                     console.log(`Beach clicked: ${beach.name}`);
+                });
+
+                marker.on('popupopen', function() {
+                    const addMemoryBtn = document.querySelector('.add-memory-btn');
+                    const viewMemoriesBtn = document.querySelector('.view-memories-btn');
+
+                    if (addMemoryBtn) {
+                        addMemoryBtn.onclick = () => showMemoryModal(beach);
+                    }
+
+                    if (viewMemoriesBtn) {
+                        viewMemoriesBtn.onclick = () => showPhotoGallery(beach);
+                    }
                 });
 
                 // Animate marker appearance with a staggered delay
@@ -1141,6 +1343,112 @@
             performanceObserver.observe({ entryTypes: ['paint'] }); // Observe paint events
 
         } // End of initializeMap function
+
+        /**
+         * Shows the photo gallery for a given beach.
+         * @param {object} beach - The beach data object.
+         */
+        function showPhotoGallery(beach) {
+            const galleryModal = document.getElementById('photo-gallery');
+            const galleryPhotos = document.getElementById('gallery-photos');
+            const closeGallery = document.querySelector('.close-gallery');
+
+            galleryPhotos.innerHTML = ''; // Clear previous photos
+
+            if (beach.memories.length === 0) {
+                galleryPhotos.innerHTML = '<p>No memories yet. Add one!</p>';
+            } else {
+                beach.memories.forEach(memory => {
+                    const img = document.createElement('img');
+                    img.src = memory.photo;
+                    img.alt = memory.note;
+                    img.className = 'gallery-photo';
+                    galleryPhotos.appendChild(img);
+                });
+            }
+
+            galleryModal.style.display = 'block';
+
+            closeGallery.onclick = () => {
+                galleryModal.style.display = 'none';
+            };
+
+            window.onclick = (event) => {
+                if (event.target == galleryModal) {
+                    galleryModal.style.display = 'none';
+                }
+            };
+        }
+
+        /**
+         * Shows the modal for adding a new memory.
+         * @param {object} beach - The beach data object.
+         */
+        function showMemoryModal(beach) {
+            const memoryModal = document.getElementById('memory-modal');
+            const closeMemoryModal = document.querySelector('.close-memory-modal');
+            const addMemoryForm = document.getElementById('add-memory-form');
+
+            memoryModal.style.display = 'block';
+
+            addMemoryForm.onsubmit = (event) => {
+                event.preventDefault();
+                addMemory(beach);
+            };
+
+            closeMemoryModal.onclick = () => {
+                memoryModal.style.display = 'none';
+            };
+
+            window.onclick = (event) => {
+                if (event.target == memoryModal) {
+                    memoryModal.style.display = 'none';
+                }
+            };
+        }
+
+        /**
+         * Adds a new memory to a beach and saves it to local storage.
+         * @param {object} beach - The beach data object.
+         */
+        function addMemory(beach) {
+            const photoInput = document.getElementById('memory-photo-input');
+            const noteInput = document.getElementById('memory-note-input');
+            const file = photoInput.files[0];
+
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const newMemory = {
+                        photo: e.target.result,
+                        note: noteInput.value
+                    };
+                    beach.memories.push(newMemory);
+                    saveBeaches();
+                    document.getElementById('memory-modal').style.display = 'none';
+                    photoInput.value = '';
+                    noteInput.value = '';
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        /**
+         * Saves the beaches data to local storage.
+         */
+        function saveBeaches() {
+            localStorage.setItem('keralaBeaches', JSON.stringify(beaches));
+        }
+
+        /**
+         * Loads the beaches data from local storage.
+         */
+        function loadBeaches() {
+            const storedBeaches = localStorage.getItem('keralaBeaches');
+            if (storedBeaches) {
+                beaches = JSON.parse(storedBeaches);
+            }
+        }
 
         // Global error handling for JavaScript errors during map initialization
         window.addEventListener('error', function(e) {
