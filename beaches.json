@@ -1,0 +1,167 @@
+[
+    {
+        "name": "Kovalam Beach",
+        "lat": 8.4004,
+        "lng": 76.9784,
+        "type": "popular",
+        "description": "Famous for its crescent-shaped coastline and iconic lighthouse, Kovalam is Kerala's crown jewel of beach tourism.",
+        "features": ["Lighthouse", "Ayurvedic Spas", "Surfing", "Fine Dining"],
+        "rating": 4.7,
+        "reviews": 2847,
+        "memories": []
+    },
+    {
+        "name": "Varkala Beach",
+        "lat": 8.7379,
+        "lng": 76.7161,
+        "type": "serene",
+        "description": "Known as Papanasam Beach, this cliff-top paradise offers breathtaking views and natural mineral springs with healing properties.",
+        "features": ["Cliff Views", "Mineral Springs", "Yoga Retreats", "Sunset Cafes"],
+        "rating": 4.6,
+        "reviews": 1923,
+        "memories": []
+    },
+    {
+        "name": "Alleppey Beach",
+        "lat": 9.4981,
+        "lng": 76.3388,
+        "type": "popular",
+        "description": "Gateway to the enchanting backwaters, this beach perfectly combines coastal beauty with serene lagoon experiences.",
+        "features": ["Backwaters", "Houseboats", "Historic Pier", "Lighthouse"],
+        "rating": 4.5,
+        "reviews": 3156,
+        "memories": []
+    },
+    {
+        "name": "Cherai Beach",
+        "lat": 10.1102,
+        "lng": 76.1785,
+        "type": "serene",
+        "description": "A pristine stretch of golden sand with calm waters, perfect for swimming and peaceful contemplation.",
+        "features": ["Golden Sand", "Swimming", "Backwaters", "Paddy Fields"],
+        "rating": 4.4,
+        "reviews": 1567,
+        "memories": []
+    },
+    {
+        "name": "Marari Beach",
+        "lat": 9.6089,
+        "lng": 76.2833,
+        "type": "serene",
+        "description": "An untouched paradise with swaying palms and pristine waters, offering the perfect escape from urban life.",
+        "features": ["Pristine Waters", "Coconut Groves", "Fishing Village", "Peaceful"],
+        "rating": 4.8,
+        "reviews": 1234,
+        "memories": []
+    },
+    {
+        "name": "Bekal Beach",
+        "lat": 12.3915,
+        "lng": 75.0337,
+        "type": "adventure",
+        "description": "Home to the magnificent Bekal Fort, this beach combines historical grandeur with natural beauty.",
+        "features": ["Historic Fort", "Archaeology", "Photography", "Trekking"],
+        "rating": 4.6,
+        "reviews": 2087,
+        "memories": []
+    },
+    {
+        "name": "Kannur Beach",
+        "lat": 11.8745,
+        "lng": 75.3704,
+        "type": "popular",
+        "description": "Known for its cultural richness and pristine coastline, offering a perfect blend of tradition and natural beauty.",
+        "features": ["Cultural Sites", "Clean Waters", "Local Cuisine", "Theyyam"],
+        "rating": 4.3,
+        "reviews": 1456,
+        "memories": []
+    },
+    {
+        "name": "Muzhappilangad Beach",
+        "lat": 11.7833,
+        "lng": 75.3167,
+        "type": "adventure",
+        "description": "Kerala's longest drive-in beach, where you can literally drive on the sand and enjoy unique beach experiences.",
+        "features": ["Drive-in Beach", "Adventure Sports", "Unique Experience", "Photography"],
+        "rating": 4.5,
+        "reviews": 1789,
+        "memories": []
+    },
+    {
+        "name": "Kappad Beach",
+        "lat": 11.3889,
+        "lng": 75.7194,
+        "type": "serene",
+        "description": "Historic beach where Vasco da Gama first landed in India, combining historical significance with natural beauty.",
+        "features": ["Historical Site", "Vasco da Gama", "Rock Formations", "Peaceful"],
+        "rating": 4.2,
+        "reviews": 1123,
+        "memories": []
+    },
+    {
+        "name": "Payyambalam Beach",
+        "lat": 11.8833,
+        "lng": 75.3667,
+        "type": "popular",
+        "description": "A beautiful beach with a well-maintained park, perfect for families and evening strolls.",
+        "features": ["Beach Park", "Family Friendly", "Sculptures", "Evening Walks"],
+        "rating": 4.4,
+        "reviews": 1334,
+        "memories": []
+    },
+    {
+        "name": "Kizhunna Beach",
+        "lat": 11.7833,
+        "lng": 75.3333,
+        "type": "serene",
+        "description": "A hidden gem with black rocks and clear waters, offering a unique and tranquil beach experience.",
+        "features": ["Black Rocks", "Clear Waters", "Secluded", "Photography"],
+        "rating": 4.5,
+        "reviews": 892,
+        "memories": []
+    },
+    {
+        "name": "Thirumullavaram Beach",
+        "lat": 8.3167,
+        "lng": 77.0167,
+        "type": "serene",
+        "description": "A pristine beach with golden sand and gentle waves, perfect for a peaceful getaway.",
+        "features": ["Golden Sand", "Gentle Waves", "Peaceful", "Pristine"],
+        "rating": 4.3,
+        "reviews": 756,
+        "memories": []
+    },
+    {
+        "name": "Shanghumukham Beach",
+        "lat": 8.4667,
+        "lng": 76.9333,
+        "type": "popular",
+        "description": "Located near Trivandrum airport, this beach offers beautiful sunsets and modern amenities.",
+        "features": ["Sunset Views", "Modern Amenities", "Airport Proximity", "Restaurants"],
+        "rating": 4.1,
+        "reviews": 1678,
+        "memories": []
+    },
+    {
+        "name": "Nattika Beach",
+        "lat": 10.3667,
+        "lng": 76.0833,
+        "type": "serene",
+        "description": "A serene beach with minimal crowds, offering an authentic Kerala coastal experience.",
+        "features": ["Minimal Crowds", "Authentic Experience", "Fishing", "Tranquil"],
+        "rating": 4.4,
+        "reviews": 543,
+        "memories": []
+    },
+    {
+        "name": "Kappil Beach",
+        "lat": 8.6833,
+        "lng": 76.7167,
+        "type": "adventure",
+        "description": "Where backwaters meet the sea, creating a unique landscape perfect for kayaking and exploration.",
+        "features": ["Backwater Confluence", "Kayaking", "Unique Landscape", "Exploration"],
+        "rating": 4.6,
+        "reviews": 1087,
+        "memories": []
+    }
+]
