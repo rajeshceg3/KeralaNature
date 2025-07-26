@@ -21,39 +21,41 @@ self.addEventListener('install', event => {
     );
 });
 
-// Serve cached assets when offline
 self.addEventListener('fetch', event => {
-    event.respondWith(
-        caches.match(event.request)
-            .then(response => {
-                // Cache hit - return response
-                if (response) {
+    const requestUrl = new URL(event.request.url);
+
+    // Use a "network first, then cache" strategy for beaches.json
+    if (requestUrl.pathname.endsWith('beaches.json')) {
+        event.respondWith(
+            fetch(event.request)
+                .then(response => {
+                    const responseToCache = response.clone();
+                    caches.open(CACHE_NAME)
+                        .then(cache => {
+                            cache.put(event.request, responseToCache);
+                        });
                     return response;
-                }
-
-                // Clone the request to use it both for caching and for the browser
-                const fetchRequest = event.request.clone();
-
-                return fetch(fetchRequest).then(
-                    response => {
-                        // Check if we received a valid response
-                        if (!response || response.status !== 200 || response.type !== 'basic') {
-                            return response;
-                        }
-
-                        // Clone the response to use it both for caching and for the browser
-                        const responseToCache = response.clone();
-
+                })
+                .catch(() => {
+                    return caches.match(event.request);
+                })
+        );
+    } else {
+        // Use a "cache first, then network" strategy for all other requests
+        event.respondWith(
+            caches.match(event.request)
+                .then(response => {
+                    return response || fetch(event.request).then(fetchResponse => {
+                        const responseToCache = fetchResponse.clone();
                         caches.open(CACHE_NAME)
                             .then(cache => {
                                 cache.put(event.request, responseToCache);
                             });
-
-                        return response;
-                    }
-                );
-            })
-    );
+                        return fetchResponse;
+                    });
+                })
+        );
+    }
 });
 
 // Update the service worker and remove old caches

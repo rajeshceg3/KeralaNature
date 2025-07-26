@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kerala's Pristine Beaches - Immersive Experience</title>
     <!-- Leaflet CSS for map functionality -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H" crossorigin="anonymous" />
     <!-- Google Fonts for Inter and Playfair Display -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
@@ -591,6 +591,17 @@
             border: 0;
         }
 
+        .sr-only-focusable:active,
+        .sr-only-focusable:focus {
+            position: static;
+            width: auto;
+            height: auto;
+            margin: 0;
+            overflow: visible;
+            clip: auto;
+            white-space: normal;
+        }
+
         /* Focus states for keyboard navigation */
         .feature-tag:focus,
         .legend-item:focus,
@@ -749,9 +760,24 @@
             transform: translateY(-2px);
             box-shadow: 0 8px 20px rgba(0,0,0,0.3);
         }
+
+        .geolocation-error {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--warning-gradient);
+            color: white;
+            padding: 1rem;
+            border-radius: var(--border-radius-sm);
+            z-index: 1001;
+            box-shadow: var(--glass-shadow);
+            text-align: center;
+        }
     </style>
 </head>
 <body>
+    <a href="#map" class="sr-only sr-only-focusable">Skip to main content</a>
     <!-- Loading Screen HTML structure -->
     <div class="loading-screen" id="loadingScreen">
         <div class="loading-animation">
@@ -808,18 +834,18 @@
             <p>Embark on a virtual journey through Kerala's most stunning coastal destinations. Each marker reveals hidden gems and local secrets.</p>
             
             <div class="legend">
-                <div class="legend-item" tabindex="0" role="button" aria-label="Popular beaches category">
+                <button class="legend-item" aria-label="Filter for Popular Destinations">
                     <div class="legend-icon popular" aria-hidden="true"></div>
                     <div class="legend-text">Popular Destinations</div>
-                </div>
-                <div class="legend-item" tabindex="0" role="button" aria-label="Serene beaches category">
+                </button>
+                <button class="legend-item" aria-label="Filter for Serene Hideaways">
                     <div class="legend-icon serene" aria-hidden="true"></div>
                     <div class="legend-text">Serene Hideaways</div>
-                </div>
-                <div class="legend-item" tabindex="0" role="button" aria-label="Adventure beaches category">
+                </button>
+                <button class="legend-item" aria-label="Filter for Adventure Hubs">
                     <div class="legend-icon adventure" aria-hidden="true"></div>
                     <div class="legend-text">Adventure Hubs</div>
-                </div>
+                </button>
             </div>
         </aside>
     </main>
@@ -847,7 +873,9 @@
     </div>
 
     <!-- Leaflet JavaScript library -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js" integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin="anonymous"></script>
+    <script src="map.js"></script>
+    <script src="ui.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
