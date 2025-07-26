@@ -173,8 +173,8 @@ function initializeMap() {
         });
 
         marker.on('popupopen', function() {
-            const addMemoryBtn = document.querySelector('.add-memory-btn');
-            const viewMemoriesBtn = document.querySelector('.view-memories-btn');
+const addMemoryBtn = this.getPopup().getElement().querySelector('.add-memory-btn');
+const viewMemoriesBtn = this.getPopup().getElement().querySelector('.view-memories-btn');
 
             if (addMemoryBtn) {
                 addMemoryBtn.onclick = () => showMemoryModal(beach);
