@@ -81,13 +81,23 @@ function showPhotoGallery(beach) {
 
     galleryModal.style.display = 'block';
 
-    closeGallery.onclick = () => {
+    const closeModal = () => {
         galleryModal.style.display = 'none';
+        window.removeEventListener('keydown', handleEsc);
     };
+
+    const handleEsc = (event) => {
+        if (event.key === 'Escape') {
+            closeModal();
+        }
+    };
+
+    closeGallery.onclick = closeModal;
+    window.addEventListener('keydown', handleEsc);
 
     window.onclick = (event) => {
         if (event.target == galleryModal) {
-            galleryModal.style.display = 'none';
+            closeModal();
         }
     };
 }
@@ -103,18 +113,30 @@ function showMemoryModal(beach) {
 
     memoryModal.style.display = 'block';
 
-    addMemoryForm.onsubmit = (event) => {
-        event.preventDefault();
-        addMemory(beach);
+    const closeModal = () => {
+        memoryModal.style.display = 'none';
+        window.removeEventListener('keydown', handleEsc);
     };
 
-    closeMemoryModal.onclick = () => {
-        memoryModal.style.display = 'none';
+    const handleEsc = (event) => {
+        if (event.key === 'Escape') {
+            closeModal();
+        }
     };
+
+    const handleSubmit = (event) => {
+        event.preventDefault();
+        addMemory(beach);
+        // Do not close modal here, addMemory does it on success
+    };
+
+    addMemoryForm.onsubmit = handleSubmit;
+    closeMemoryModal.onclick = closeModal;
+    window.addEventListener('keydown', handleEsc);
 
     window.onclick = (event) => {
         if (event.target == memoryModal) {
-            memoryModal.style.display = 'none';
+            closeModal();
         }
     };
 }

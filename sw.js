@@ -4,10 +4,13 @@ const CACHE_NAME = 'kerala-beaches-cache-v1';
 const urlsToCache = [
     '/',
     '/index.html',
+    '/script.js',
+    '/map.js',
+    '/ui.js',
+    '/beaches.json',
     'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css',
     'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js',
-    'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;600;700&display=swap',
-    'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
+    'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;600;700&display=swap'
 ];
 
 // Install the service worker and cache static assets
@@ -24,8 +27,22 @@ self.addEventListener('install', event => {
 self.addEventListener('fetch', event => {
     const requestUrl = new URL(event.request.url);
 
-    // Use a "network first, then cache" strategy for beaches.json
-    if (requestUrl.pathname.endsWith('beaches.json')) {
+    // Strategy for map tiles: Cache first, then network
+    if (requestUrl.hostname.endsWith('tile.openstreetmap.org')) {
+        event.respondWith(
+            caches.match(event.request).then(response => {
+                return response || fetch(event.request).then(fetchResponse => {
+                    const responseToCache = fetchResponse.clone();
+                    caches.open(CACHE_NAME).then(cache => {
+                        cache.put(event.request, responseToCache);
+                    });
+                    return fetchResponse;
+                });
+            })
+        );
+    }
+    // Strategy for beaches.json: Network first, then cache
+    else if (requestUrl.pathname.endsWith('beaches.json')) {
         event.respondWith(
             fetch(event.request)
                 .then(response => {
@@ -40,12 +57,17 @@ self.addEventListener('fetch', event => {
                     return caches.match(event.request);
                 })
         );
-    } else {
-        // Use a "cache first, then network" strategy for all other requests
+    }
+    // Strategy for all other requests: Cache first, then network
+    else {
         event.respondWith(
             caches.match(event.request)
                 .then(response => {
                     return response || fetch(event.request).then(fetchResponse => {
+                        // For external resources like Google Fonts, just return the response without caching
+                        if (!event.request.url.startsWith(self.location.origin)) {
+                            return fetchResponse;
+                        }
                         const responseToCache = fetchResponse.clone();
                         caches.open(CACHE_NAME)
                             .then(cache => {

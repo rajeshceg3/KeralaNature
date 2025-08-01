@@ -3,9 +3,11 @@ document.addEventListener('DOMContentLoaded', function() {
     fetch('beaches.json')
         .then(response => response.json())
         .then(data => {
+            beaches = data;
+            loadMemories(); // Load memories from localStorage
             // Hide loading screen and initialize map
             document.getElementById('loadingScreen').classList.add('hidden');
-            initializeMap(data); // Initialize the map after loading screen hides
+            initializeMap(beaches); // Initialize the map after loading screen hides
         })
         .catch(error => {
             console.error('Error loading beach data:', error);
@@ -27,6 +29,18 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 let beaches = [];
+
+/**
+ * Loads memories for all beaches from local storage.
+ */
+function loadMemories() {
+    beaches.forEach(beach => {
+        const storedMemories = localStorage.getItem(beach.name);
+        if (storedMemories) {
+            beach.memories = JSON.parse(storedMemories);
+        }
+    });
+}
 
 /**
  * Sanitizes a string to prevent XSS attacks.
