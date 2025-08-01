@@ -120,13 +120,7 @@ const viewMemoriesBtn = this.getPopup().getElement().querySelector('.view-memori
             }
         });
 
-        // Animate marker appearance with a staggered delay
-        setTimeout(() => {
-            // Ensure the element exists before trying to access its style
-            if (marker.getElement()) {
-                marker.getElement().style.animation = 'markerPulse 3s infinite ease-in-out';
-            }
-        }, index * 200); // Staggered animation delay
+        // We will handle animation after the map is ready to avoid race conditions.
     });
 
     // Add map interaction enhancements based on zoom level
@@ -137,33 +131,6 @@ const viewMemoriesBtn = this.getPopup().getElement().querySelector('.view-memori
             // Scale markers based on zoom level for better visibility
             const scale = Math.min(1 + (currentZoom - 7) * 0.1, 1.5); // Max scale 1.5
             marker.style.transform = `scale(${scale})`;
-        });
-    });
-
-    // Add keyboard navigation for the map (arrow keys for pan, +/- for zoom)
-    map.on('focus', function() {
-        document.addEventListener('keydown', function(e) {
-            switch(e.key) {
-                case 'ArrowUp':
-                    map.panBy([0, -50]); // Pan up
-                    break;
-                case 'ArrowDown':
-                    map.panBy([0, 50]); // Pan down
-                    break;
-                case 'ArrowLeft':
-                    map.panBy([-50, 0]); // Pan left
-                    break;
-                case 'ArrowRight':
-                    map.panBy([50, 0]); // Pan right
-                    break;
-                case '+':
-                case '=': // Both + and = for zoom in
-                    map.zoomIn();
-                    break;
-                case '-':
-                    map.zoomOut();
-                    break;
-            }
         });
     });
 
@@ -179,11 +146,15 @@ const viewMemoriesBtn = this.getPopup().getElement().querySelector('.view-memori
 
         // Add subtle entrance animation to all markers after map is ready
         setTimeout(() => {
-            const markers = document.querySelectorAll('.custom-marker');
-            markers.forEach((marker, index) => {
+            const markerElements = document.querySelectorAll('.custom-marker');
+            markerElements.forEach((markerEl, index) => {
                 setTimeout(() => {
-                    // Reapply a specific animation for entrance, overriding initial pulse if needed
-                    marker.style.animation = 'popupSlideIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
+                    markerEl.style.animation = 'popupSlideIn 0.5s forwards cubic-bezier(0.68, -0.55, 0.265, 1.55)';
+
+                    // After the entrance animation, apply the pulsing animation
+                    markerEl.addEventListener('animationend', () => {
+                        markerEl.style.animation = 'markerPulse 3s infinite ease-in-out, bloom 4s infinite alternate';
+                    }, { once: true }); // The listener will remove itself after firing once
                 }, index * 100);
             });
         }, 500); // Delay before starting marker entrance animations
@@ -211,4 +182,31 @@ const viewMemoriesBtn = this.getPopup().getElement().querySelector('.view-memori
     // Attach resize event listener
     window.addEventListener('resize', handleResize);
     handleResize(); // Initial call to set correct position on load
+
+    // Add a single keyboard event listener for map navigation
+    document.addEventListener('keydown', function(e) {
+        if (map && map.isFocused()) {
+            switch(e.key) {
+                case 'ArrowUp':
+                    map.panBy([0, -50]);
+                    break;
+                case 'ArrowDown':
+                    map.panBy([0, 50]);
+                    break;
+                case 'ArrowLeft':
+                    map.panBy([-50, 0]);
+                    break;
+                case 'ArrowRight':
+                    map.panBy([50, 0]);
+                    break;
+                case '+':
+                case '=':
+                    map.zoomIn();
+                    break;
+                case '-':
+                    map.zoomOut();
+                    break;
+            }
+        }
+    });
 }
