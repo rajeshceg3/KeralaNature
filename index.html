@@ -8,30 +8,40 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H" crossorigin="anonymous" />
     <!-- Google Fonts for Inter and Playfair Display -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
     <style>
         /* CSS Variables for consistent styling */
         :root {
-            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            --tertiary-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-            --success-gradient: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
-            --warning-gradient: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            /* Modern, Premium Palette */
+            --color-primary: #006D77; /* Deep Teal */
+            --color-secondary: #83C5BE; /* Soft Aqua */
+            --color-accent: #E29578; /* Warm Sand/Coral */
+            --color-surface: #EDF6F9; /* Off-white mist */
+
+            --gradient-ocean: linear-gradient(135deg, #006D77 0%, #2A9D8F 100%);
+            --gradient-sunset: linear-gradient(135deg, #E29578 0%, #FFDDD2 100%);
+            --gradient-glass: linear-gradient(145deg, rgba(255,255,255,0.9), rgba(255,255,255,0.6));
             
-            --glass-bg: rgba(255, 255, 255, 0.1);
-            --glass-border: rgba(255, 255, 255, 0.2);
-            --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            --glass-bg: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.5);
+            --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+            --glass-blur: blur(12px);
             
-            --text-primary: #2d3748;
-            --text-secondary: #4a5568;
-            --text-light: #718096;
+            --text-primary: #1D3557;
+            --text-secondary: #457B9D;
+            --text-light: #7A9E9F;
             
-            --border-radius: 20px;
             --border-radius-sm: 12px;
-            --border-radius-lg: 24px;
+            --border-radius: 24px;
+            --border-radius-lg: 40px;
+
+            --font-display: 'Playfair Display', serif;
+            --font-body: 'Inter', sans-serif;
             
             --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            --transition-bounce: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-            --transition-spring: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            --transition-spring: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
         /* Reset default browser styles */
@@ -39,68 +49,34 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
         }
 
         /* Body styling with background gradient and font */
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: linear-gradient(135deg, #ffeef8 0%, #f0f8ff 30%, #e6f7ff 60%, #f0fff0 100%);
+            font-family: var(--font-body);
+            background: #EDF6F9;
+            color: var(--text-primary);
             min-height: 100vh;
             overflow-x: hidden;
             position: relative;
-            animation: colorShift 20s infinite alternate;
         }
 
-        /* Keyframe animation for background color shift */
-        @keyframes colorShift {
-            0% { background: linear-gradient(135deg, #ffeef8 0%, #f0f8ff 30%, #e6f7ff 60%, #f0fff0 100%); }
-            25% { background: linear-gradient(135deg, #f0fff0 0%, #e6f7ff 30%, #f0f8ff 60%, #ffeef8 100%); }
-            50% { background: linear-gradient(135deg, #e6f7ff 0%, #f0fff0 30%, #ffeef8 60%, #f0f8ff 100%); }
-            75% { background: linear-gradient(135deg, #f0f8ff 0%, #ffeef8 30%, #f0fff0 60%, #e6f7ff 100%); }
-            100% { background: linear-gradient(135deg, #ffeef8 0%, #f0f8ff 30%, #e6f7ff 60%, #f0fff0 100%); }
-        }
-
-        /* Background Particles for visual effect */
-        .background-particles {
+        /* Subtle Background Gradient Mesh */
+        .background-mesh {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            pointer-events: none;
-            z-index: 1;
-            overflow: hidden;
-        }
-
-        .particle {
-            position: absolute;
-            background: radial-gradient(circle, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.2) 70%, transparent 100%);
-            border-radius: 50%;
-            animation: float 15s infinite ease-in-out;
-        }
-
-        /* Individual particle positioning and animation delays */
-        .particle:nth-child(1) { width: 4px; height: 4px; top: 20%; left: 10%; animation-delay: 0s; }
-        .particle:nth-child(2) { width: 6px; height: 6px; top: 60%; left: 20%; animation-delay: -3s; }
-        .particle:nth-child(3) { width: 3px; height: 3px; top: 40%; left: 60%; animation-delay: -6s; }
-        .particle:nth-child(4) { width: 5px; height: 5px; top: 80%; left: 80%; animation-delay: -9s; }
-        .particle:nth-child(5) { width: 4px; height: 4px; top: 30%; left: 90%; animation-delay: -12s; }
-        .particle:nth-child(6) { width: 7px; height: 7px; top: 70%; left: 40%; animation-delay: -15s; }
-
-        /* Keyframe animation for floating particles */
-        @keyframes float {
-            0%, 100% { 
-                transform: translateY(0px) translateX(0px) rotate(0deg);
-                opacity: 0.7;
-            }
-            33% { 
-                transform: translateY(-30px) translateX(20px) rotate(120deg);
-                opacity: 1;
-            }
-            66% { 
-                transform: translateY(20px) translateX(-15px) rotate(240deg);
-                opacity: 0.8;
-            }
+            z-index: -1;
+            background:
+                radial-gradient(at 0% 0%, rgba(0, 109, 119, 0.1) 0px, transparent 50%),
+                radial-gradient(at 100% 0%, rgba(131, 197, 190, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(226, 149, 120, 0.1) 0px, transparent 50%),
+                radial-gradient(at 0% 100%, rgba(0, 109, 119, 0.05) 0px, transparent 50%);
+            filter: blur(40px);
+            opacity: 0.8;
         }
 
         /* Loading Screen styles */
@@ -110,12 +86,12 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: var(--color-surface);
             display: flex;
             align-items: center;
             justify-content: center;
             z-index: 9999;
-            transition: opacity 0.5s ease, visibility 0.5s ease;
+            transition: opacity 0.6s ease, visibility 0.6s ease;
         }
 
         .loading-screen.hidden {
@@ -125,214 +101,357 @@
 
         .loading-animation {
             text-align: center;
-            color: white;
+            color: var(--color-primary);
         }
 
-        .wave-loader {
-            width: 80px;
+        .spinner {
+            width: 60px;
             height: 60px;
-            margin: 0 auto 20px;
-            position: relative;
-        }
-
-        .wave-loader .wave {
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 40px;
-            height: 40px;
-            background: rgba(255, 255, 255, 0.3);
+            border: 4px solid rgba(0, 109, 119, 0.1);
+            border-left-color: var(--color-primary);
             border-radius: 50%;
-            animation: wave 2s infinite ease-in-out;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
         }
 
-        .wave-loader .wave:nth-child(2) { animation-delay: -0.4s; }
-        .wave-loader .wave:nth-child(3) { animation-delay: -0.8s; }
-
-        /* Keyframe animation for wave loader */
-        @keyframes wave {
-            0%, 100% { transform: translateX(-50%) scale(0); opacity: 1; }
-            50% { transform: translateX(-50%) scale(1); opacity: 0.7; }
-        }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
 
         .loading-text {
-            font-size: 1.2rem;
-            font-weight: 500;
+            font-family: var(--font-display);
+            font-size: 1.5rem;
+            font-weight: 600;
             margin-bottom: 0.5rem;
-            animation: pulse 2s infinite;
+            background: var(--gradient-ocean);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         .loading-subtext {
+            font-family: var(--font-body);
             font-size: 0.9rem;
-            opacity: 0.8;
-            font-weight: 300;
+            color: var(--text-secondary);
         }
 
-        /* Header styling */
-        .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            padding: 3rem 2rem;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 10px 40px rgba(102, 126, 234, 0.3);
-        }
+        /* --- Desktop Layout (Default) --- */
 
-        .header::before {
-            content: '';
+        /* Sidebar Container (replaces .header) */
+        .sidebar {
             position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
-            animation: headerFloat 8s ease-in-out infinite;
+            top: 0;
+            left: 0;
+            width: 350px; /* Sidebar width */
+            height: 100vh;
+            background: var(--glass-bg);
+            backdrop-filter: var(--glass-blur);
+            border-right: 1px solid var(--glass-border);
+            padding: 2rem;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            box-shadow: var(--glass-shadow);
+            transform: translateX(0);
+            transition: transform 0.3s ease;
         }
 
-        /* Keyframe animation for header background float */
-        @keyframes headerFloat {
-            0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0.8; }
-            50% { transform: translateY(-20px) rotate(180deg); opacity: 1; }
+        /* Sidebar Header (Title & Stats) */
+        .sidebar-header {
+            margin-bottom: 2rem;
         }
 
-        .header-content {
-            position: relative;
-            z-index: 2;
-        }
-
-        .header h1 {
-            font-family: 'Playfair Display', serif;
-            color: #fff;
-            font-size: clamp(2rem, 5vw, 3.5rem);
+        .sidebar-header h1 {
+            font-family: var(--font-display);
+            color: var(--color-primary);
+            font-size: 2rem;
             font-weight: 700;
             margin-bottom: 1rem;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
-            animation: slideInFromTop 1s ease-out;
+            line-height: 1.2;
         }
 
-        .header p {
-            color: rgba(255, 255, 255, 0.9);
-            font-size: clamp(1rem, 3vw, 1.3rem);
-            font-weight: 300;
-            max-width: 600px;
-            margin: 0 auto;
-            animation: slideInFromBottom 1s ease-out 0.3s both;
+        .sidebar-header p {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            line-height: 1.6;
         }
 
         .header-stats {
-            display: flex;
-            justify-content: center;
-            gap: 2rem;
-            margin-top: 2rem;
-            animation: slideInFromBottom 1s ease-out 0.6s both;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 2rem;
         }
 
         .stat-item {
             text-align: center;
-            background: rgba(255, 255, 255, 0.1);
-            padding: 1rem 1.5rem;
+            background: rgba(255, 255, 255, 0.5);
+            padding: 1rem;
             border-radius: var(--border-radius-sm);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border: 1px solid var(--glass-border);
             transition: var(--transition-smooth);
         }
 
         .stat-item:hover {
-            transform: translateY(-5px);
-            background: rgba(255, 255, 255, 0.2);
+            background: white;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
         }
 
         .stat-number {
-            font-size: 2rem;
+            font-size: 1.5rem;
             font-weight: 700;
-            color: #fff;
+            color: var(--color-accent);
             display: block;
         }
 
         .stat-label {
-            font-size: 0.9rem;
-            color: rgba(255, 255, 255, 0.8);
-            margin-top: 0.5rem;
+            font-size: 0.8rem;
+            color: var(--text-light);
+            margin-top: 0.2rem;
         }
 
-        /* Keyframe animations for sliding elements */
-        @keyframes slideInFromTop {
-            from { transform: translateY(-50px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-
-        @keyframes slideInFromBottom {
-            from { transform: translateY(50px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-
-        /* Map Container styling */
-        .map-container {
+        /* Info Panel / Legend (Sibling of Header inside Sidebar) */
+        .info-panel {
+            background: transparent;
+            box-shadow: none;
+            padding: 0;
+            border: none;
+            margin-top: auto; /* Push to bottom of sidebar */
             position: relative;
-            margin: 2rem;
-            border-radius: var(--border-radius-lg);
-            overflow: hidden;
-            box-shadow: 0 25px 80px rgba(0, 0, 0, 0.15);
-            background: #fff;
-            animation: slideInFromBottom 1s ease-out 0.9s both;
+        }
+
+        .info-panel h3 {
+            color: var(--text-primary);
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Hide description in sidebar as it duplicates header p */
+        .info-panel p {
+            display: none;
+        }
+
+        .legend {
+            margin-top: 0;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.8rem;
+            padding: 0.8rem;
+            border-radius: var(--border-radius-sm);
+            transition: var(--transition-smooth);
+            cursor: pointer;
+            background: white;
+            border: 1px solid transparent;
+        }
+
+        .legend-item:hover, .legend-item.active {
+            background: white;
+            border-color: var(--color-secondary);
+            transform: translateX(5px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        .legend-icon {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 1rem;
+            flex-shrink: 0;
+        }
+
+        .legend-icon.popular { background: #f093fb; }
+        .legend-icon.serene { background: #4facfe; }
+        .legend-icon.adventure { background: #fa709a; }
+
+        .legend-text {
+            font-size: 0.9rem;
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        /* Map Container styling - Full Screen */
+        .map-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            z-index: 1; /* Behind header */
+            padding-left: 350px; /* Offset for sidebar */
         }
 
         #map {
-            height: 70vh;
+            height: 100%;
             width: 100%;
-            border-radius: var(--border-radius-lg);
-            position: relative;
-            z-index: 10;
         }
 
-        /* Popup styling for beach information */
-        .beach-popup {
-            font-family: 'Inter', sans-serif;
+        /* --- Mobile Layout Hyper-Optimization --- */
+        @media (max-width: 768px) {
+            
+            /* Sidebar Wrapper becomes invisible pass-through */
+            .sidebar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: none;
+                backdrop-filter: none;
+                border: none;
+                box-shadow: none;
+                pointer-events: none; /* Let map clicks through */
+                padding: 0;
+                display: block; /* Ensure it renders */
+            }
+
+            /* Header becomes a floating pill */
+            .sidebar-header {
+                pointer-events: auto; /* Re-enable clicks */
+                width: auto;
+                height: auto;
+                position: absolute;
+                top: 1rem;
+                left: 1rem;
+                right: 1rem;
+
+                /* Glass Pill Style */
+                background: rgba(255, 255, 255, 0.9);
+                backdrop-filter: blur(10px);
+                border-radius: 50px;
+                padding: 0.8rem 1.5rem;
+                border: 1px solid rgba(255, 255, 255, 0.8);
+                box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+
+                /* Layout */
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                justify-content: center;
+                text-align: center;
+                margin-bottom: 0;
+            }
+
+            .sidebar-header h1 {
+                font-size: 1.1rem;
+                margin: 0;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+            
+            .sidebar-header p, .header-stats {
+                display: none; /* Hide extra details on mobile initial view */
+            }
+
+            .map-container {
+                padding-left: 0;
+            }
+
+            /* Move Info Panel/Legend to Bottom Sheet */
+            .info-panel {
+                pointer-events: auto; /* Re-enable clicks */
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                width: 100%;
+                max-height: 80vh;
+                margin-top: 0;
+
+                /* Bottom Sheet Style */
+                background: white;
+                border-radius: 24px 24px 0 0;
+                padding: 1.5rem;
+                box-shadow: 0 -10px 40px rgba(0,0,0,0.2);
+                z-index: 1001;
+
+                /* Interactions */
+                overflow-y: auto;
+                transform: translateY(calc(100% - 85px)); /* Peek mode */
+                transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            }
+
+            .info-panel.has-selection h3,
+            .info-panel.has-selection .generic-intro {
+                display: none;
+            }
+            
+            .info-panel::before {
+                content: '';
+                position: absolute;
+                top: 10px;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 40px;
+                height: 4px;
+                background: #E2E8F0;
+                border-radius: 2px;
+            }
+
+            .info-panel.expanded {
+                transform: translateY(0);
+            }
+
+            .info-panel h3 {
+                margin-top: 0.5rem;
+            }
+            
+            .info-panel p {
+                display: block; /* Show text in bottom sheet */
+                margin-bottom: 1rem;
+            }
+
+            /* Adjust legend items for horizontal scroll on mobile */
+            .legend {
+                display: flex;
+                overflow-x: auto;
+                padding-bottom: 1rem;
+                gap: 1rem;
+            }
+
+            .legend-item {
+                flex-shrink: 0;
+                margin-bottom: 0;
+                width: auto;
+            }
+        }
+
+        /* --- Popup Styling (Desktop) --- */
+        .leaflet-popup-content-wrapper {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
             border-radius: var(--border-radius);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.2);
             padding: 0;
-            border: none;
-            background: linear-gradient(135deg, #fff 0%, #f8f9ff 100%);
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
             overflow: hidden;
-            min-width: 320px;
-            max-width: 400px;
-            animation: popupSlideIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
         }
 
-        /* Keyframe animation for popup entrance */
-        @keyframes popupSlideIn {
-            from { transform: translateY(20px) scale(0.8); opacity: 0; }
-            to { transform: translateY(0) scale(1); opacity: 1; }
+        .leaflet-popup-tip {
+            background: rgba(255, 255, 255, 0.95);
+        }
+
+        .beach-popup {
+            font-family: var(--font-body);
+            min-width: 280px;
         }
 
         .popup-header {
-            background: var(--primary-gradient);
+            background: var(--gradient-ocean);
             color: #fff;
-            padding: 1.5rem;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .popup-header::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
-            animation: headerFloat 4s ease-in-out infinite;
+            padding: 1.2rem 1.5rem;
+            border-radius: var(--border-radius) var(--border-radius) 0 0; /* Rounded top corners */
         }
 
         .popup-header h3 {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.4rem;
-            font-weight: 600;
+            font-family: var(--font-display);
+            font-size: 1.2rem;
             margin: 0;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
-            position: relative;
-            z-index: 1;
         }
 
         .popup-content {
@@ -340,242 +459,78 @@
         }
 
         .popup-content p {
+            font-size: 0.9rem;
+            line-height: 1.5;
             color: var(--text-secondary);
-            line-height: 1.7;
-            margin-bottom: 1.2rem;
-            font-size: 0.95rem;
+            margin-bottom: 1rem;
         }
 
         .beach-features {
             display: flex;
             flex-wrap: wrap;
-            gap: 0.8rem;
-            margin-top: 1.5rem;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
         }
 
         .feature-tag {
-            background: var(--success-gradient);
-            color: #fff;
-            padding: 0.5rem 1rem;
-            border-radius: 25px;
-            font-size: 0.8rem;
-            font-weight: 500;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
-            transition: var(--transition-bounce);
-            cursor: pointer;
-        }
-
-        .feature-tag:hover {
-            transform: translateY(-2px) scale(1.05);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
-        }
-
-        .beach-rating {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            margin-top: 1rem;
-            padding-top: 1rem;
-            border-top: 1px solid rgba(0, 0, 0, 0.1);
-        }
-
-        .stars {
-            color: #ffd700;
-            font-size: 1.2rem;
-        }
-
-        .rating-text {
-            color: var(--text-light);
-            font-size: 0.85rem;
-        }
-
-        /* Info Panel styling */
-        .info-panel {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(20px);
-            padding: 2rem;
-            border-radius: var(--border-radius);
-            box-shadow: var(--glass-shadow);
-            z-index: 1000;
-            max-width: 350px;
-            border: 1px solid var(--glass-border);
-            transition: var(--transition-smooth);
-            animation: slideInFromRight 1s ease-out 1.2s both;
-        }
-
-        /* Keyframe animation for info panel entrance */
-        @keyframes slideInFromRight {
-            from { transform: translateX(100px); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-
-        .info-panel:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.2);
-        }
-
-        .info-panel h3 {
-            color: var(--text-primary);
-            font-size: 1.3rem;
+            font-size: 0.75rem;
+            padding: 0.3rem 0.8rem;
+            background: var(--color-surface);
+            color: var(--color-primary);
+            border-radius: 20px;
             font-weight: 600;
-            margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
         }
 
-        .info-panel p {
-            color: var(--text-secondary);
-            font-size: 0.95rem;
-            line-height: 1.6;
-            margin-bottom: 1.5rem;
+        .beach-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.8rem;
+            margin-top: 1rem;
         }
 
-        .legend {
-            margin-top: 1.5rem;
-            padding-top: 1.5rem;
-            border-top: 1px solid rgba(0, 0, 0, 0.1);
-        }
-
-        .legend-item {
-            display: flex;
-            align-items: center;
-            margin-bottom: 1rem;
-            padding: 0.5rem;
-            border-radius: var(--border-radius-sm);
-            transition: var(--transition-smooth);
-            cursor: pointer;
-        }
-
-        .legend-item:hover {
-            background: rgba(255, 255, 255, 0.1);
-            transform: translateX(5px);
-        }
-
-        .legend-icon {
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            margin-right: 1rem;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-            transition: var(--transition-bounce);
-        }
-
-        .legend-icon:hover {
-            transform: scale(1.1);
-        }
-
-        /* Legend icon colors based on beach type */
-        .legend-icon.popular { background: var(--secondary-gradient); }
-        .legend-icon.serene { background: var(--tertiary-gradient); }
-        .legend-icon.adventure { background: var(--warning-gradient); }
-
-        .legend-text {
+        .action-btn {
+            background: rgba(0, 109, 119, 0.1);
+            color: var(--color-primary);
+            border: 1px solid transparent;
+            padding: 0.8rem;
+            border-radius: 12px;
             font-size: 0.9rem;
-            color: var(--text-secondary);
-            font-weight: 500;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            text-align: center;
         }
 
-        /* Custom marker styling */
+        .action-btn:hover {
+            background: rgba(0, 109, 119, 0.15);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            transform: translateY(-1px);
+        }
+
+        .action-btn.primary {
+            background: var(--gradient-ocean);
+            color: white;
+        }
+
+        /* --- Markers --- */
         .custom-marker {
-            position: relative;
-            animation: markerPulse 3s infinite ease-in-out;
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
-        /* Keyframe animation for marker bloom effect */
-        @keyframes bloom {
-            0% {
-                box-shadow: 0 0 5px rgba(255, 105, 180, 0.4), 0 0 10px rgba(255, 105, 180, 0.3), 0 0 15px rgba(255, 105, 180, 0.2),
-                            0 0 20px #ff69b4, 0 0 30px #ff69b4, 0 0 40px #ff69b4, 0 0 50px #ff69b4;
-            }
-            100% {
-                box-shadow: 0 0 10px rgba(255, 105, 180, 0.6), 0 0 20px rgba(255, 105, 180, 0.4), 0 0 30px rgba(255, 105, 180, 0.3),
-                            0 0 25px #ff69b4, 0 0 35px #ff69b4, 0 0 45px #ff69b4, 0 0 55px #ff69b4;
-            }
+        .custom-marker:hover {
+            transform: scale(1.2) !important;
+            z-index: 1000 !important;
         }
 
-        /* Keyframe animation for marker pulse */
+        /* --- Animations --- */
         @keyframes markerPulse {
             0%, 100% { transform: scale(1); }
             50% { transform: scale(1.1); }
         }
 
-        .custom-marker::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 40px;
-            height: 40px;
-            background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
-            border-radius: 50%;
-            transform: translate(-50%, -50%);
-            animation: ripple 2s infinite ease-out;
-        }
-
-        /* Keyframe animation for ripple effect around markers */
-        @keyframes ripple {
-            0% { transform: translate(-50%, -50%) scale(0.5); opacity: 1; }
-            100% { transform: translate(-50%, -50%) scale(2); opacity: 0; }
-        }
-
-        /* Leaflet control enhancements (zoom buttons) */
-        .leaflet-control-zoom {
-            border: none !important;
-            box-shadow: var(--glass-shadow) !important;
-        }
-
-        .leaflet-control-zoom a {
-            background: rgba(255, 255, 255, 0.1) !important;
-            backdrop-filter: blur(10px) !important;
-            border: 1px solid rgba(255, 255, 255, 0.2) !important;
-            color: var(--text-primary) !important;
-            transition: var(--transition-smooth) !important;
-        }
-
-        .leaflet-control-zoom a:hover {
-            background: rgba(255, 255, 255, 0.2) !important;
-            transform: scale(1.1) !important;
-        }
-
-        /* Responsive adjustments for mobile devices */
-        @media (max-width: 768px) {
-            .header {
-                padding: 2rem 1rem;
-            }
-            
-            .header-stats {
-                flex-direction: column;
-                gap: 1rem;
-                align-items: center;
-            }
-            
-            .stat-item {
-                padding: 0.8rem 1.2rem;
-            }
-            
-            .map-container {
-                margin: 1rem;
-            }
-            
-            .info-panel {
-                position: relative;
-                top: auto;
-                right: auto;
-                margin: 1rem;
-                max-width: none;
-            }
-            
-            #map {
-                height: 50vh;
-            }
-            
-            .beach-popup {
-                min-width: 280px;
-            }
+        @keyframes bloom {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(255,255,255, 0.7); }
+            50% { box-shadow: 0 0 20px 10px rgba(255,255,255, 0); }
         }
 
         /* Accessibility: Visually hidden text for screen readers */
@@ -665,29 +620,6 @@
             border-radius: var(--border-radius-sm);
         }
 
-        .beach-actions {
-            margin-top: 1rem;
-            display: flex;
-            gap: 1rem;
-        }
-
-        .action-btn {
-            background: var(--primary-gradient);
-            color: white;
-            border: none;
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            cursor: pointer;
-            font-weight: 600;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-            transition: var(--transition-smooth);
-        }
-
-        .action-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
-        }
-
         /* Add Memory Modal */
         .memory-modal {
             position: fixed;
@@ -745,7 +677,7 @@
         }
 
         #add-memory-form button {
-            background: var(--success-gradient);
+            background: var(--color-primary);
             color: white;
             border: none;
             padding: 0.75rem;
@@ -766,7 +698,7 @@
             top: 10px;
             left: 50%;
             transform: translateX(-50%);
-            background: var(--warning-gradient);
+            background: var(--color-accent);
             color: white;
             padding: 1rem;
             border-radius: var(--border-radius-sm);
@@ -778,96 +710,97 @@
 </head>
 <body>
     <a href="#map" class="sr-only sr-only-focusable">Skip to main content</a>
-    <!-- Loading Screen HTML structure -->
+
+    <!-- Loading Screen -->
     <div class="loading-screen" id="loadingScreen">
         <div class="loading-animation">
-            <div class="wave-loader">
-                <div class="wave"></div>
-                <div class="wave"></div>
-                <div class="wave"></div>
-            </div>
+            <div class="spinner"></div>
             <div class="loading-text">Discovering Paradise</div>
             <div class="loading-subtext">Loading Kerala's pristine beaches...</div>
         </div>
     </div>
 
-    <!-- Background Particles HTML structure -->
-    <div class="background-particles" aria-hidden="true">
-        <div class="particle"></div>
-        <div class="particle"></div>
-        <div class="particle"></div>
-        <div class="particle"></div>
-        <div class="particle"></div>
-        <div class="particle"></div>
-    </div>
+    <!-- Background Mesh -->
+    <div class="background-mesh" aria-hidden="true"></div>
 
-    <!-- Header Section -->
-    <header class="header">
-        <div class="header-content">
-            <h1>Kerala's Pristine Beaches</h1>
-            <p>Discover the emerald coast of God's Own Country, where golden sands meet azure waters in perfect harmony</p>
+    <!-- Sidebar Wrapper (Glass Sidebar on Desktop, Invisible Container on Mobile) -->
+    <aside class="sidebar">
+        <!-- Sidebar Header: Title & Stats (Pill on Mobile) -->
+        <header class="sidebar-header">
+            <div class="header-content-inner">
+                <h1>Kerala's Pristine Beaches</h1>
+                <p>Discover the emerald coast of God's Own Country, where golden sands meet azure waters in perfect harmony</p>
+
+                <div class="header-stats">
+                    <div class="stat-item">
+                        <span class="stat-number">15+</span>
+                        <span class="stat-label">Beautiful Beaches</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">600km</span>
+                        <span class="stat-label">Coastline</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Info Panel / Legend (Bottom Sheet on Mobile) -->
+        <div class="info-panel" id="infoPanel" role="complementary">
+            <h3><i class="ph ph-compass" style="font-size: 1.5rem; color: var(--color-primary);"></i> Beach Explorer</h3>
+            <p class="generic-intro">Embark on a virtual journey through Kerala's most stunning coastal destinations.</p>
             
-            <div class="header-stats">
-                <div class="stat-item">
-                    <span class="stat-number">15+</span>
-                    <span class="stat-label">Beautiful Beaches</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-number">600km</span>
-                    <span class="stat-label">Coastline</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-number">∞</span>
-                    <span class="stat-label">Memories</span>
-                </div>
+            <!-- Dynamic Content Area for Mobile Bottom Sheet -->
+            <div id="bottom-sheet-content"></div>
+
+            <div class="legend">
+                <button class="legend-item" data-filter="all" aria-label="Show All">
+                    <div class="legend-icon" style="background: var(--text-secondary);"></div>
+                    <div class="legend-text">All</div>
+                </button>
+                <button class="legend-item" data-filter="popular" aria-label="Filter for Popular Destinations">
+                    <div class="legend-icon popular" aria-hidden="true"></div>
+                    <div class="legend-text">Popular</div>
+                </button>
+                <button class="legend-item" data-filter="serene" aria-label="Filter for Serene Hideaways">
+                    <div class="legend-icon serene" aria-hidden="true"></div>
+                    <div class="legend-text">Serene</div>
+                </button>
+                <button class="legend-item" data-filter="adventure" aria-label="Filter for Adventure Hubs">
+                    <div class="legend-icon adventure" aria-hidden="true"></div>
+                    <div class="legend-text">Adventure</div>
+                </button>
             </div>
         </div>
-    </header>
+    </aside>
 
-    <!-- Main Content: Map Container and Info Panel -->
+    <!-- Map Container -->
     <main class="map-container">
         <div id="map" role="application" aria-label="Interactive map of Kerala beaches"></div>
-        
-        <!-- Info Panel for legend and general information -->
-        <aside class="info-panel" role="complementary">
-            <h3>🏖️ Beach Explorer</h3>
-            <p>Embark on a virtual journey through Kerala's most stunning coastal destinations. Each marker reveals hidden gems and local secrets.</p>
-            
-            <div class="legend">
-                <button class="legend-item" aria-label="Filter for Popular Destinations">
-                    <div class="legend-icon popular" aria-hidden="true"></div>
-                    <div class="legend-text">Popular Destinations</div>
-                </button>
-                <button class="legend-item" aria-label="Filter for Serene Hideaways">
-                    <div class="legend-icon serene" aria-hidden="true"></div>
-                    <div class="legend-text">Serene Hideaways</div>
-                </button>
-                <button class="legend-item" aria-label="Filter for Adventure Hubs">
-                    <div class="legend-icon adventure" aria-hidden="true"></div>
-                    <div class="legend-text">Adventure Hubs</div>
-                </button>
-            </div>
-        </aside>
     </main>
 
     <!-- Photo Gallery Modal -->
-    <div id="photo-gallery" class="photo-gallery-modal" style="display: none;">
-        <div class="photo-gallery-content">
-            <span class="close-gallery">&times;</span>
+    <div id="photo-gallery" class="photo-gallery-modal" style="display: none; opacity: 0; transition: opacity 0.3s ease;">
+        <div class="photo-gallery-content" style="transform: scale(0.9); transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);">
+            <span class="close-gallery"><i class="ph ph-x"></i></span>
             <h2>Beach Memories</h2>
             <div id="gallery-photos" class="gallery-photos"></div>
         </div>
     </div>
 
     <!-- Add Memory Modal -->
-    <div id="memory-modal" class="memory-modal" style="display: none;">
-        <div class="memory-modal-content">
-            <span class="close-memory-modal">&times;</span>
+    <div id="memory-modal" class="memory-modal" style="display: none; opacity: 0; transition: opacity 0.3s ease;">
+        <div class="memory-modal-content" style="transform: scale(0.9); transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);">
+            <span class="close-memory-modal"><i class="ph ph-x"></i></span>
             <h2>Add a Memory</h2>
             <form id="add-memory-form">
-                <input type="file" id="memory-photo-input" accept="image/*" required>
-                <textarea id="memory-note-input" placeholder="Add a note..."></textarea>
-                <button type="submit">Add Memory</button>
+                <div class="file-input-wrapper" style="position: relative; margin-bottom: 1rem;">
+                    <button type="button" class="action-btn" onclick="document.getElementById('memory-photo-input').click()" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                        <i class="ph ph-camera"></i> Choose Photo
+                    </button>
+                    <input type="file" id="memory-photo-input" accept="image/*" required style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer;">
+                </div>
+                <textarea id="memory-note-input" placeholder="Write a note about this moment..." style="width: 100%; padding: 1rem; border: 1px solid var(--glass-border); border-radius: var(--border-radius-sm); font-family: var(--font-body); min-height: 100px; resize: none; margin-bottom: 1rem;"></textarea>
+                <button type="submit" class="action-btn primary" style="width: 100%; padding: 0.8rem;">Save Memory</button>
             </form>
         </div>
     </div>
@@ -879,4 +812,3 @@
     <script src="script.js"></script>
 </body>
 </html>
-
