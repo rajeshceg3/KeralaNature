@@ -80,9 +80,18 @@ function showPhotoGallery(beach) {
     }
 
     galleryModal.style.display = 'block';
+    // Animation frame for smooth transition
+    requestAnimationFrame(() => {
+        galleryModal.style.opacity = '1';
+        galleryModal.querySelector('.photo-gallery-content').style.transform = 'scale(1)';
+    });
 
     const closeModal = () => {
-        galleryModal.style.display = 'none';
+        galleryModal.style.opacity = '0';
+        galleryModal.querySelector('.photo-gallery-content').style.transform = 'scale(0.9)';
+        setTimeout(() => {
+            galleryModal.style.display = 'none';
+        }, 300);
         window.removeEventListener('keydown', handleEsc);
     };
 
@@ -112,9 +121,18 @@ function showMemoryModal(beach) {
     const addMemoryForm = document.getElementById('add-memory-form');
 
     memoryModal.style.display = 'block';
+     // Animation frame for smooth transition
+     requestAnimationFrame(() => {
+        memoryModal.style.opacity = '1';
+        memoryModal.querySelector('.memory-modal-content').style.transform = 'scale(1)';
+    });
 
     const closeModal = () => {
-        memoryModal.style.display = 'none';
+        memoryModal.style.opacity = '0';
+        memoryModal.querySelector('.memory-modal-content').style.transform = 'scale(0.9)';
+        setTimeout(() => {
+            memoryModal.style.display = 'none';
+        }, 300);
         window.removeEventListener('keydown', handleEsc);
     };
 

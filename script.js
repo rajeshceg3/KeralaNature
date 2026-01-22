@@ -6,8 +6,10 @@ document.addEventListener('DOMContentLoaded', function() {
             beaches = data;
             loadMemories(); // Load memories from localStorage
             // Hide loading screen and initialize map
-            document.getElementById('loadingScreen').classList.add('hidden');
-            initializeMap(beaches); // Initialize the map after loading screen hides
+            setTimeout(() => {
+                 document.getElementById('loadingScreen').classList.add('hidden');
+                 initializeMap(beaches); // Initialize the map after loading screen hides
+            }, 800); // Artificial delay for smoothness and to show off the loader
         })
         .catch(error => {
             console.error('Error loading beach data:', error);
@@ -71,7 +73,16 @@ function addMemory(beach) {
             };
             beach.memories.push(newMemory);
             saveBeaches(beach);
-            document.getElementById('memory-modal').style.display = 'none';
+
+            // Close with animation
+            const modal = document.getElementById('memory-modal');
+            const content = modal.querySelector('.memory-modal-content');
+            modal.style.opacity = '0';
+            content.style.transform = 'scale(0.9)';
+            setTimeout(() => {
+                modal.style.display = 'none';
+            }, 300);
+
             photoInput.value = '';
             noteInput.value = '';
         };
@@ -80,6 +91,7 @@ function addMemory(beach) {
         const errorElement = document.createElement('p');
         errorElement.textContent = 'Please select a photo and write a note.';
         errorElement.style.color = 'red';
+        errorElement.style.marginTop = '10px';
         const form = document.getElementById('add-memory-form');
         form.appendChild(errorElement);
         setTimeout(() => {

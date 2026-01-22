@@ -32,6 +32,25 @@ function initializeMap(beachesData) {
         position: 'topright'
     }).addTo(map);
 
+    // Handle map clicks to close bottom sheet on mobile
+    map.on('click', function() {
+        if (window.innerWidth <= 768) {
+            const infoPanel = document.getElementById('infoPanel');
+            const bottomSheetContent = document.getElementById('bottom-sheet-content');
+
+            if (infoPanel.classList.contains('expanded')) {
+                infoPanel.classList.remove('expanded');
+                infoPanel.classList.remove('has-selection');
+                // Optional: Clear content after animation
+                setTimeout(() => {
+                   if (!infoPanel.classList.contains('expanded')) {
+                       bottomSheetContent.innerHTML = '';
+                   }
+                }, 400);
+            }
+        }
+    });
+
     // Add OpenStreetMap tile layer with attribution and opacity
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '© OpenStreetMap contributors',
@@ -53,30 +72,67 @@ function initializeMap(beachesData) {
      */
     function createCustomIcon(type) {
         const color = beachColors[type];
+        // Using Phosphor icons instead of emoji
+        let iconClass = 'ph-beach-ball'; // default
+        if (type === 'popular') iconClass = 'ph-users-three';
+        if (type === 'serene') iconClass = 'ph-sun-horizon';
+        if (type === 'adventure') iconClass = 'ph-person-simple-swim';
+
         return L.divIcon({
             className: 'custom-marker', // Class for CSS styling and animations
             html: `
                 <div style="
-                    background: linear-gradient(135deg, ${color} 0%, ${color}aa 100%);
-                    width: 30px;
-                    height: 30px;
-                    border-radius: 50%;
-                    border: 3px solid white;
-                    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+                    background: white;
+                    width: 40px;
+                    height: 40px;
+                    border-radius: 50% 50% 50% 0;
+                    transform: rotate(-45deg);
+                    border: 3px solid ${color};
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
                     display: flex;
                     align-items: center;
                     justify-content: center;
-                    font-size: 16px;
                     position: relative;
-                    animation: markerPulse 3s infinite ease-in-out, bloom 4s infinite alternate;
                 ">
-                    🏖️ <!-- Beach emoji as icon -->
+                    <i class="ph ${iconClass}" style="
+                        transform: rotate(45deg);
+                        font-size: 20px;
+                        color: ${color};
+                    "></i>
                 </div>
             `,
-            iconSize: [36, 36], // Size of the icon
-            iconAnchor: [18, 18], // Point of the icon which will correspond to marker's location
-            popupAnchor: [0, -20] // Point from which the popup should open relative to the iconAnchor
+            iconSize: [40, 40],
+            iconAnchor: [20, 40], // Point of the icon which will correspond to marker's location
+            popupAnchor: [0, -45] // Point from which the popup should open relative to the iconAnchor
         });
+    }
+
+    // Function to handle opening details
+    function openBeachDetails(beach) {
+        if (window.innerWidth <= 768) {
+            // Mobile: Use Bottom Sheet
+            const bottomSheetContent = document.getElementById('bottom-sheet-content');
+            const infoPanel = document.getElementById('infoPanel');
+
+            // Populate content
+            bottomSheetContent.innerHTML = createPopupContent(beach);
+
+            // Expand sheet
+            infoPanel.classList.add('expanded');
+            infoPanel.classList.add('has-selection');
+
+            // Attach event listeners to the new buttons in the bottom sheet
+            setTimeout(() => {
+                const addMemoryBtn = bottomSheetContent.querySelector('.add-memory-btn');
+                const viewMemoriesBtn = bottomSheetContent.querySelector('.view-memories-btn');
+                if (addMemoryBtn) addMemoryBtn.onclick = () => showMemoryModal(beach);
+                if (viewMemoriesBtn) viewMemoriesBtn.onclick = () => showPhotoGallery(beach);
+            }, 100);
+
+        } else {
+            // Desktop: Use default Popup (already bound, just open)
+            // Logic handled by Leaflet's bindPopup
+        }
     }
 
     // Iterate over each beach and add a marker to the map
@@ -87,29 +143,38 @@ function initializeMap(beachesData) {
             alt: `Marker for ${beach.name} beach` // Alt text for accessibility
         }).addTo(map);
 
-        // Create a popup for the marker with enhanced styling
+        // Bind popup for desktop
         const popup = L.popup({
-            maxWidth: 400,
-            minWidth: 320,
-            closeButton: true,
-            className: 'custom-popup' // Custom class for popup styling
+            maxWidth: 320,
+            minWidth: 300,
+            closeButton: false, // Cleaner look
+            className: 'custom-popup'
         }).setContent(createPopupContent(beach));
 
-        marker.bindPopup(popup); // Bind the popup to the marker
+        marker.bindPopup(popup);
 
-        // Add mouseover event to open popup on hover
+        // Add mouseover event to open popup on hover (Desktop only)
         marker.on('mouseover', function(e) {
-            this.openPopup();
+             if (window.innerWidth > 768) {
+                this.openPopup();
+             }
         });
 
-        // Add click event for logging (can be extended for analytics)
+        // Add click event
         marker.on('click', function(e) {
             console.log(`Beach clicked: ${beach.name}`);
+
+            if (window.innerWidth <= 768) {
+                // Mobile: Prevent default popup and show bottom sheet
+                this.closePopup(); // Ensure popup doesn't show
+                openBeachDetails(beach);
+            }
         });
 
         marker.on('popupopen', function() {
-const addMemoryBtn = this.getPopup().getElement().querySelector('.add-memory-btn');
-const viewMemoriesBtn = this.getPopup().getElement().querySelector('.view-memories-btn');
+            // This event fires on desktop hover/click
+            const addMemoryBtn = this.getPopup().getElement().querySelector('.add-memory-btn');
+            const viewMemoriesBtn = this.getPopup().getElement().querySelector('.view-memories-btn');
 
             if (addMemoryBtn) {
                 addMemoryBtn.onclick = () => showMemoryModal(beach);
@@ -161,27 +226,15 @@ const viewMemoriesBtn = this.getPopup().getElement().querySelector('.view-memori
     });
 
     /**
-     * Handles window resize events to invalidate map size and adjust info panel position.
+     * Handles window resize events to invalidate map size.
      */
     function handleResize() {
         map.invalidateSize(); // Recalculate map size when container changes
-
-        // Adjust info panel position for mobile responsiveness
-        const infoPanel = document.querySelector('.info-panel');
-        if (window.innerWidth <= 768) { // For screens smaller than or equal to 768px
-            infoPanel.style.position = 'relative';
-            infoPanel.style.top = 'auto';
-            infoPanel.style.right = 'auto';
-        } else { // For larger screens
-            infoPanel.style.position = 'absolute';
-            infoPanel.style.top = '20px';
-            infoPanel.style.right = '20px';
-        }
     }
 
     // Attach resize event listener
     window.addEventListener('resize', handleResize);
-    handleResize(); // Initial call to set correct position on load
+    // handleResize(); // Not needed on load for simple invalidation
 
     // Add a single keyboard event listener for map navigation
     document.addEventListener('keydown', function(e) {
