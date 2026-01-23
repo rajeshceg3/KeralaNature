@@ -170,3 +170,72 @@ function showGeolocationError() {
         errorNotification.remove();
     }, 5000);
 }
+
+/**
+ * Renders the list of beaches in the sidebar.
+ * @param {Array} beaches - The list of beach objects.
+ */
+function renderBeachList(beaches) {
+    const listContainer = document.getElementById('beach-list');
+    if (!listContainer) return;
+
+    listContainer.innerHTML = '';
+
+    beaches.forEach(beach => {
+        const item = document.createElement('div');
+        item.className = `beach-list-item ${beach.type}`;
+        item.innerHTML = `
+            <div class="item-icon"></div>
+            <span class="item-name">${beach.name}</span>
+            <span class="item-type">${beach.type}</span>
+        `;
+
+        // Interaction
+        item.addEventListener('click', () => {
+            if (window.innerWidth > 768 && map) {
+                map.flyTo([beach.lat, beach.lng], 14, {
+                    animate: true,
+                    duration: 1.5
+                });
+
+                // Open popup after fly
+                map.once('moveend', () => {
+                    map.eachLayer((layer) => {
+                        if (layer instanceof L.Marker && layer.options.title === beach.name) {
+                            layer.openPopup();
+                        }
+                    });
+                });
+            }
+        });
+
+        item.addEventListener('mouseenter', () => {
+             if (!map) return;
+             map.eachLayer((layer) => {
+                if (layer instanceof L.Marker && layer.options.title === beach.name) {
+                     const icon = layer.getElement();
+                     if (icon) {
+                         icon.classList.add('hover-highlight');
+                         // Add a specialized high-z-index class
+                         icon.style.zIndex = 10000;
+                     }
+                }
+            });
+        });
+
+        item.addEventListener('mouseleave', () => {
+             if (!map) return;
+             map.eachLayer((layer) => {
+                if (layer instanceof L.Marker && layer.options.title === beach.name) {
+                     const icon = layer.getElement();
+                     if (icon) {
+                         icon.classList.remove('hover-highlight');
+                         icon.style.zIndex = '';
+                     }
+                }
+            });
+        });
+
+        listContainer.appendChild(item);
+    });
+}

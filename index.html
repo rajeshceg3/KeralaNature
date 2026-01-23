@@ -14,24 +14,24 @@
     <style>
         /* CSS Variables for consistent styling */
         :root {
-            /* Modern, Premium Palette */
-            --color-primary: #006D77; /* Deep Teal */
-            --color-secondary: #83C5BE; /* Soft Aqua */
+            /* Ultrathink Premium Palette */
+            --color-primary: #0F4C5C; /* Deep Teal - Richer */
+            --color-secondary: #5F9EA0; /* Cadet Blue - More sophisticated */
             --color-accent: #E29578; /* Warm Sand/Coral */
-            --color-surface: #EDF6F9; /* Off-white mist */
+            --color-surface: #F0F4F8; /* Cooler White */
 
-            --gradient-ocean: linear-gradient(135deg, #006D77 0%, #2A9D8F 100%);
+            --gradient-ocean: linear-gradient(135deg, #0F4C5C 0%, #38A3A5 100%);
             --gradient-sunset: linear-gradient(135deg, #E29578 0%, #FFDDD2 100%);
-            --gradient-glass: linear-gradient(145deg, rgba(255,255,255,0.9), rgba(255,255,255,0.6));
+            --gradient-glass: linear-gradient(125deg, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.4));
             
-            --glass-bg: rgba(255, 255, 255, 0.7);
-            --glass-border: rgba(255, 255, 255, 0.5);
-            --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
-            --glass-blur: blur(12px);
+            --glass-bg: rgba(255, 255, 255, 0.65);
+            --glass-border: rgba(255, 255, 255, 0.4);
+            --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+            --glass-blur: blur(20px);
             
-            --text-primary: #1D3557;
-            --text-secondary: #457B9D;
-            --text-light: #7A9E9F;
+            --text-primary: #1D2D35;
+            --text-secondary: #526770;
+            --text-light: #8CA3AD;
             
             --border-radius-sm: 12px;
             --border-radius: 24px;
@@ -55,11 +55,29 @@
         /* Body styling with background gradient and font */
         body {
             font-family: var(--font-body);
-            background: #EDF6F9;
+            background: var(--color-surface);
             color: var(--text-primary);
             min-height: 100vh;
             overflow-x: hidden;
             position: relative;
+            line-height: 1.6;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            letter-spacing: -0.01em;
+        }
+
+        /* Noise Overlay for Texture */
+        .noise-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9998; /* Just below loading screen */
+            opacity: 0.03;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
         }
 
         /* Subtle Background Gradient Mesh */
@@ -139,19 +157,32 @@
             position: absolute;
             top: 0;
             left: 0;
-            width: 350px; /* Sidebar width */
+            width: 380px; /* Increased width for better breathing room */
             height: 100vh;
             background: var(--glass-bg);
-            backdrop-filter: var(--glass-blur);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
             border-right: 1px solid var(--glass-border);
-            padding: 2rem;
+            padding: 2.5rem;
             z-index: 1000;
             display: flex;
             flex-direction: column;
             overflow-y: auto;
-            box-shadow: var(--glass-shadow);
+            box-shadow: 20px 0 40px rgba(0,0,0,0.05);
             transform: translateX(0);
             transition: transform 0.3s ease;
+        }
+
+        /* Hide scrollbar for cleaner look */
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .sidebar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .sidebar::-webkit-scrollbar-thumb {
+            background: rgba(0,0,0,0.1);
+            border-radius: 3px;
         }
 
         /* Sidebar Header (Title & Stats) */
@@ -179,6 +210,8 @@
             grid-template-columns: 1fr 1fr;
             gap: 1rem;
             margin-bottom: 2rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
         }
 
         .stat-item {
@@ -276,6 +309,66 @@
             font-weight: 500;
         }
 
+        /* Interactive Beach List in Sidebar */
+        .beach-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .beach-list-title {
+            font-family: var(--font-display);
+            font-size: 1.1rem;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .beach-list-item {
+            display: flex;
+            align-items: center;
+            padding: 0.8rem 1rem;
+            border-radius: var(--border-radius-sm);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: transparent;
+            border: 1px solid transparent;
+        }
+
+        .beach-list-item:hover {
+            background: rgba(255, 255, 255, 0.6);
+            border-color: rgba(255, 255, 255, 0.8);
+            transform: translateX(5px);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+        }
+
+        .beach-list-item .item-icon {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 1rem;
+            background: var(--text-light);
+        }
+
+        .beach-list-item.popular .item-icon { background: #f093fb; }
+        .beach-list-item.serene .item-icon { background: #4facfe; }
+        .beach-list-item.adventure .item-icon { background: #fa709a; }
+
+        .item-name {
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .item-type {
+            margin-left: auto;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            text-transform: capitalize;
+            opacity: 0.7;
+        }
+
         /* Map Container styling - Full Screen */
         .map-container {
             position: absolute;
@@ -284,7 +377,7 @@
             width: 100%;
             height: 100vh;
             z-index: 1; /* Behind header */
-            padding-left: 350px; /* Offset for sidebar */
+            padding-left: 380px; /* Offset for sidebar */
         }
 
         #map {
@@ -314,20 +407,23 @@
             /* Header becomes a floating pill */
             .sidebar-header {
                 pointer-events: auto; /* Re-enable clicks */
-                width: auto;
+                width: 90%;
+                max-width: 400px;
                 height: auto;
                 position: absolute;
-                top: 1rem;
-                left: 1rem;
-                right: 1rem;
+                top: 20px;
+                left: 50%;
+                transform: translateX(-50%); /* Center perfectly */
+                right: auto;
 
-                /* Glass Pill Style */
-                background: rgba(255, 255, 255, 0.9);
-                backdrop-filter: blur(10px);
+                /* Glass Pill Style - Ultrathink Polish */
+                background: rgba(255, 255, 255, 0.85);
+                backdrop-filter: blur(15px) saturate(180%);
+                -webkit-backdrop-filter: blur(15px) saturate(180%);
                 border-radius: 50px;
                 padding: 0.8rem 1.5rem;
-                border: 1px solid rgba(255, 255, 255, 0.8);
-                box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+                border: 1px solid rgba(255, 255, 255, 0.6);
+                box-shadow: 0 8px 32px rgba(0,0,0,0.1);
 
                 /* Layout */
                 display: flex;
@@ -350,6 +446,10 @@
                 display: none; /* Hide extra details on mobile initial view */
             }
 
+            #beach-list-container {
+                display: none; /* Hide beach list on mobile */
+            }
+
             .map-container {
                 padding-left: 0;
             }
@@ -361,20 +461,20 @@
                 bottom: 0;
                 left: 0;
                 width: 100%;
-                max-height: 80vh;
+                max-height: 85vh; /* Slightly taller */
                 margin-top: 0;
 
                 /* Bottom Sheet Style */
                 background: white;
-                border-radius: 24px 24px 0 0;
+                border-radius: 30px 30px 0 0;
                 padding: 1.5rem;
-                box-shadow: 0 -10px 40px rgba(0,0,0,0.2);
+                box-shadow: 0 -10px 40px rgba(0,0,0,0.15);
                 z-index: 1001;
 
                 /* Interactions */
                 overflow-y: auto;
-                transform: translateY(calc(100% - 85px)); /* Peek mode */
-                transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+                transform: translateY(calc(100% - 90px)); /* Peek mode */
+                transition: transform 0.5s cubic-bezier(0.19, 1, 0.22, 1); /* Smoother spring */
             }
 
             .info-panel.has-selection h3,
@@ -382,16 +482,17 @@
                 display: none;
             }
             
+            /* Bottom Sheet Handle */
             .info-panel::before {
                 content: '';
                 position: absolute;
-                top: 10px;
+                top: 12px;
                 left: 50%;
                 transform: translateX(-50%);
                 width: 40px;
-                height: 4px;
-                background: #E2E8F0;
-                border-radius: 2px;
+                height: 5px;
+                background: #CBD5E0;
+                border-radius: 3px;
             }
 
             .info-panel.expanded {
@@ -424,16 +525,19 @@
 
         /* --- Popup Styling (Desktop) --- */
         .leaflet-popup-content-wrapper {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(15px) saturate(180%);
+            -webkit-backdrop-filter: blur(15px) saturate(180%);
             border-radius: var(--border-radius);
-            box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.15);
             padding: 0;
             overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.6);
         }
 
         .leaflet-popup-tip {
-            background: rgba(255, 255, 255, 0.95);
+            background: rgba(255, 255, 255, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.6); /* Match border */
         }
 
         .beach-popup {
@@ -514,23 +618,56 @@
 
         /* --- Markers --- */
         .custom-marker {
-            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            /* Reset default transform logic to handle inside pin */
+            transition: z-index 0s;
         }
 
-        .custom-marker:hover {
-            transform: scale(1.2) !important;
+        .pin-wrapper {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .pin {
+            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            z-index: 2;
+        }
+
+        .pin-pulse {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            opacity: 0.6;
+            animation: pulse-ring 2.5s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+            z-index: 1;
+        }
+
+        @keyframes pulse-ring {
+            0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
+            50% { opacity: 0.5; }
+            100% { transform: translate(-50%, -50%) scale(3.5); opacity: 0; }
+        }
+
+        @keyframes popupSlideIn {
+            0% { opacity: 0; transform: translateY(20px) scale(0.8); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .custom-marker:hover .pin,
+        .custom-marker.hover-highlight .pin {
+            transform: rotate(-45deg) scale(1.2) translateY(-5px) !important;
             z-index: 1000 !important;
         }
 
-        /* --- Animations --- */
-        @keyframes markerPulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-        }
-
-        @keyframes bloom {
-            0%, 100% { box-shadow: 0 0 0 0 rgba(255,255,255, 0.7); }
-            50% { box-shadow: 0 0 20px 10px rgba(255,255,255, 0); }
+        .custom-marker.hover-highlight {
+            z-index: 1000 !important;
         }
 
         /* Accessibility: Visually hidden text for screen readers */
@@ -723,6 +860,9 @@
     <!-- Background Mesh -->
     <div class="background-mesh" aria-hidden="true"></div>
 
+    <!-- Noise Texture -->
+    <div class="noise-overlay" aria-hidden="true"></div>
+
     <!-- Sidebar Wrapper (Glass Sidebar on Desktop, Invisible Container on Mobile) -->
     <aside class="sidebar">
         <!-- Sidebar Header: Title & Stats (Pill on Mobile) -->
@@ -743,6 +883,14 @@
                 </div>
             </div>
         </header>
+
+        <!-- Desktop Beach List -->
+        <div id="beach-list-container">
+            <h3 class="beach-list-title">Explore Locations</h3>
+            <div id="beach-list" class="beach-list">
+                <!-- Populated via JS -->
+            </div>
+        </div>
 
         <!-- Info Panel / Legend (Bottom Sheet on Mobile) -->
         <div class="info-panel" id="infoPanel" role="complementary">

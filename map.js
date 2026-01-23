@@ -81,24 +81,27 @@ function initializeMap(beachesData) {
         return L.divIcon({
             className: 'custom-marker', // Class for CSS styling and animations
             html: `
-                <div style="
-                    background: white;
-                    width: 40px;
-                    height: 40px;
-                    border-radius: 50% 50% 50% 0;
-                    transform: rotate(-45deg);
-                    border: 3px solid ${color};
-                    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    position: relative;
-                ">
-                    <i class="ph ${iconClass}" style="
-                        transform: rotate(45deg);
-                        font-size: 20px;
-                        color: ${color};
-                    "></i>
+                <div class="pin-wrapper">
+                    <div class="pin-pulse" style="background: ${color}"></div>
+                    <div class="pin" style="
+                        background: ${color};
+                        width: 36px;
+                        height: 36px;
+                        border-radius: 50% 50% 50% 0;
+                        transform: rotate(-45deg);
+                        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        position: relative;
+                        border: 2px solid white;
+                    ">
+                        <i class="ph ${iconClass}" style="
+                            transform: rotate(45deg);
+                            font-size: 18px;
+                            color: white;
+                        "></i>
+                    </div>
                 </div>
             `,
             iconSize: [40, 40],
@@ -213,14 +216,10 @@ function initializeMap(beachesData) {
         setTimeout(() => {
             const markerElements = document.querySelectorAll('.custom-marker');
             markerElements.forEach((markerEl, index) => {
-                setTimeout(() => {
-                    markerEl.style.animation = 'popupSlideIn 0.5s forwards cubic-bezier(0.68, -0.55, 0.265, 1.55)';
-
-                    // After the entrance animation, apply the pulsing animation
-                    markerEl.addEventListener('animationend', () => {
-                        markerEl.style.animation = 'markerPulse 3s infinite ease-in-out, bloom 4s infinite alternate';
-                    }, { once: true }); // The listener will remove itself after firing once
-                }, index * 100);
+                // Staggered entrance
+                markerEl.style.opacity = '0';
+                markerEl.style.animation = 'popupSlideIn 0.6s forwards cubic-bezier(0.34, 1.56, 0.64, 1)';
+                markerEl.style.animationDelay = `${index * 100}ms`;
             });
         }, 500); // Delay before starting marker entrance animations
     });

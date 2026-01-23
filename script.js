@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', function() {
             setTimeout(() => {
                  document.getElementById('loadingScreen').classList.add('hidden');
                  initializeMap(beaches); // Initialize the map after loading screen hides
+                 renderBeachList(beaches); // Populate the sidebar list (Desktop)
             }, 800); // Artificial delay for smoothness and to show off the loader
         })
         .catch(error => {
