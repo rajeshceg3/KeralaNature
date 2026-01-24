@@ -1,4 +1,15 @@
 /**
+ * Sanitizes a string to prevent XSS attacks.
+ * @param {string} str - The string to sanitize.
+ * @returns {string} The sanitized string.
+ */
+function sanitizeHTML(str) {
+    const temp = document.createElement('div');
+    temp.textContent = str;
+    return temp.innerHTML;
+}
+
+/**
  * Generates a string of star characters based on a given rating.
  * @param {number} rating - The numerical rating (e.g., 4.5).
  * @returns {string} A string of full and half star characters.
@@ -27,16 +38,16 @@ function createPopupContent(beach) {
     const stars = getStarRating(beach.rating);
     // Map features array to feature tags
     const features = beach.features.map(feature =>
-        `<span class="feature-tag">${feature}</span>`
+        `<span class="feature-tag">${sanitizeHTML(feature)}</span>`
     ).join(''); // Join them into a single string
 
     return `
         <div class="beach-popup">
             <div class="popup-header">
-                <h3>${beach.name}</h3>
+                <h3>${sanitizeHTML(beach.name)}</h3>
             </div>
             <div class="popup-content">
-                <p>${beach.description}</p>
+                <p>${sanitizeHTML(beach.description)}</p>
                 <div class="beach-features">
                     ${features}
                 </div>
@@ -184,14 +195,17 @@ function renderBeachList(beaches) {
     beaches.forEach(beach => {
         const item = document.createElement('div');
         item.className = `beach-list-item ${beach.type}`;
+        item.setAttribute('role', 'button');
+        item.setAttribute('tabindex', '0');
+        item.setAttribute('aria-label', `View details for ${beach.name}`);
         item.innerHTML = `
             <div class="item-icon"></div>
-            <span class="item-name">${beach.name}</span>
-            <span class="item-type">${beach.type}</span>
+            <span class="item-name">${sanitizeHTML(beach.name)}</span>
+            <span class="item-type">${sanitizeHTML(beach.type)}</span>
         `;
 
         // Interaction
-        item.addEventListener('click', () => {
+        const handleClick = () => {
             if (window.innerWidth > 768 && map) {
                 map.flyTo([beach.lat, beach.lng], 14, {
                     animate: true,
@@ -206,6 +220,15 @@ function renderBeachList(beaches) {
                         }
                     });
                 });
+            }
+        };
+
+        item.addEventListener('click', handleClick);
+
+        item.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                handleClick();
             }
         });
 
