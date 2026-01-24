@@ -51,11 +51,12 @@ function initializeMap(beachesData) {
         }
     });
 
-    // Add OpenStreetMap tile layer with attribution and opacity
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap contributors',
-        opacity: 0.8,
-        className: 'custom-tiles' // Custom class for potential future styling
+    // Add CartoDB Voyager tile layer for a premium, clean look
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+        opacity: 1, // Full opacity for the clean base
+        className: 'custom-tiles',
+        maxZoom: 20
     }).addTo(map);
 
     // Define color scheme for different beach types
