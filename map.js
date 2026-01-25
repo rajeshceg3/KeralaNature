@@ -87,12 +87,15 @@ function initializeMap(beachesData) {
                 <div class="pin-wrapper">
                     <div class="pin-pulse" style="background: ${color}"></div>
                     <div class="pin" style="
-                        background: ${color};
-                        width: 36px;
-                        height: 36px;
+                        background: linear-gradient(135deg, ${color}, ${color}); /* Fallback */
+                        background: linear-gradient(135deg, ${color} 0%, rgba(0,0,0,0.2) 100%);
+                        background-blend-mode: multiply;
+                        background-color: ${color};
+                        width: 32px;
+                        height: 32px;
                         border-radius: 50% 50% 50% 0;
                         transform: rotate(-45deg);
-                        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+                        box-shadow: 0 4px 15px rgba(0,0,0,0.25);
                         display: flex;
                         align-items: center;
                         justify-content: center;
@@ -101,15 +104,15 @@ function initializeMap(beachesData) {
                     ">
                         <i class="ph ${iconClass}" style="
                             transform: rotate(45deg);
-                            font-size: 18px;
+                            font-size: 16px;
                             color: white;
                         "></i>
                     </div>
                 </div>
             `,
-            iconSize: [40, 40],
-            iconAnchor: [20, 40], // Point of the icon which will correspond to marker's location
-            popupAnchor: [0, -45] // Point from which the popup should open relative to the iconAnchor
+            iconSize: [36, 36],
+            iconAnchor: [18, 36], // Point of the icon which will correspond to marker's location
+            popupAnchor: [0, -40] // Point from which the popup should open relative to the iconAnchor
         });
     }
 
