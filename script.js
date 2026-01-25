@@ -46,14 +46,47 @@ function loadMemories() {
 }
 
 /**
- * Sanitizes a string to prevent XSS attacks.
- * @param {string} str - The string to sanitize.
- * @returns {string} The sanitized string.
+ * Resizes an image file to a maximum dimension and returns a base64 string.
+ * @param {File} file - The image file to resize.
+ * @param {number} maxDim - The maximum width or height.
+ * @param {number} quality - JPEG quality (0 to 1).
+ * @returns {Promise<string>} A promise that resolves to the data URL.
  */
-function sanitizeHTML(str) {
-    const temp = document.createElement('div');
-    temp.textContent = str;
-    return temp.innerHTML;
+function resizeImage(file, maxDim, quality) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const img = new Image();
+            img.onload = () => {
+                let width = img.width;
+                let height = img.height;
+
+                if (width > height) {
+                    if (width > maxDim) {
+                        height *= maxDim / width;
+                        width = maxDim;
+                    }
+                } else {
+                    if (height > maxDim) {
+                        width *= maxDim / height;
+                        height = maxDim;
+                    }
+                }
+
+                const canvas = document.createElement('canvas');
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+
+                resolve(canvas.toDataURL('image/jpeg', quality));
+            };
+            img.onerror = reject;
+            img.src = e.target.result;
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+    });
 }
 
 /**
@@ -66,28 +99,38 @@ function addMemory(beach) {
     const file = photoInput.files[0];
 
     if (file && noteInput.value.trim() !== '') {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            const newMemory = {
-                photo: e.target.result,
-                note: sanitizeHTML(noteInput.value)
-            };
-            beach.memories.push(newMemory);
-            saveBeaches(beach);
+        resizeImage(file, 800, 0.7)
+            .then(resizedImage => {
+                const newMemory = {
+                    photo: resizedImage,
+                    note: sanitizeHTML(noteInput.value)
+                };
+                beach.memories.push(newMemory);
 
-            // Close with animation
-            const modal = document.getElementById('memory-modal');
-            const content = modal.querySelector('.memory-modal-content');
-            modal.style.opacity = '0';
-            content.style.transform = 'scale(0.9)';
-            setTimeout(() => {
-                modal.style.display = 'none';
-            }, 300);
+                try {
+                    saveBeaches(beach);
 
-            photoInput.value = '';
-            noteInput.value = '';
-        };
-        reader.readAsDataURL(file);
+                    // Close with animation
+                    const modal = document.getElementById('memory-modal');
+                    const content = modal.querySelector('.memory-modal-content');
+                    modal.style.opacity = '0';
+                    content.style.transform = 'scale(0.9)';
+                    setTimeout(() => {
+                        modal.style.display = 'none';
+                    }, 300);
+
+                    photoInput.value = '';
+                    noteInput.value = '';
+                } catch (error) {
+                    console.error('Storage failed:', error);
+                    alert('Failed to save memory. Your local storage might be full.');
+                    beach.memories.pop(); // Revert
+                }
+            })
+            .catch(error => {
+                console.error('Image processing failed:', error);
+                alert('Failed to process image. Please try another one.');
+            });
     } else {
         const errorElement = document.createElement('p');
         errorElement.textContent = 'Please select a photo and write a note.';

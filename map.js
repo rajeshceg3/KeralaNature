@@ -4,6 +4,8 @@ function initializeMap(beachesData) {
     beaches = beachesData;
     // Initialize the map centered on Kerala with a specific zoom level
     map = L.map('map', {
+        center: [10.8505, 76.2711], // Default center (Kerala)
+        zoom: 7,                    // Default zoom
         zoomControl: false, // Disable default zoom control to add custom one
         attributionControl: false, // Disable default attribution
         fadeAnimation: true, // Smooth fade animations for map tiles
@@ -15,15 +17,16 @@ function initializeMap(beachesData) {
         navigator.geolocation.getCurrentPosition(
             (position) => {
                 const { latitude, longitude } = position.coords;
-                map.setView([latitude, longitude], 9);
+                map.flyTo([latitude, longitude], 9, {
+                    animate: true,
+                    duration: 2
+                });
             },
             () => {
-                map.setView([10.8505, 76.2711], 7); // Default to Kerala
                 showGeolocationError();
             }
         );
     } else {
-        map.setView([10.8505, 76.2711], 7); // Default to Kerala
         showGeolocationError();
     }
 
