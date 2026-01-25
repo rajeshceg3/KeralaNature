@@ -1,4 +1,5 @@
 let map;
+let beachMarkers = [];
 
 function initializeMap(beachesData) {
     beaches = beachesData;
@@ -54,10 +55,12 @@ function initializeMap(beachesData) {
         }
     });
 
-    // Add OpenStreetMap tile layer with attribution and opacity
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap contributors',
-        opacity: 0.8,
+    // Add CartoDB Voyager tile layer for a more polished look
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+        subdomains: 'abcd',
+        maxZoom: 20,
+        opacity: 0.9,
         className: 'custom-tiles' // Custom class for potential future styling
     }).addTo(map);
 
@@ -150,7 +153,12 @@ function initializeMap(beachesData) {
             icon: createCustomIcon(beach.type), // Use custom icon based on beach type
             title: beach.name, // Title for accessibility and hover
             alt: `Marker for ${beach.name} beach` // Alt text for accessibility
-        }).addTo(map);
+        });
+
+        // Store beach data directly on the marker object for easy access
+        marker.beachData = beach;
+        beachMarkers.push(marker);
+        marker.addTo(map);
 
         // Bind popup for desktop
         const popup = L.popup({
@@ -197,16 +205,6 @@ function initializeMap(beachesData) {
         // We will handle animation after the map is ready to avoid race conditions.
     });
 
-    // Add map interaction enhancements based on zoom level
-    map.on('zoomend', function() {
-        const currentZoom = map.getZoom();
-        const markers = document.querySelectorAll('.custom-marker');
-        markers.forEach(marker => {
-            // Scale markers based on zoom level for better visibility
-            const scale = Math.min(1 + (currentZoom - 7) * 0.1, 1.5); // Max scale 1.5
-            marker.style.transform = `scale(${scale})`;
-        });
-    });
 
     // Add accessibility attributes to the map container
     const mapContainer = document.getElementById('map');

@@ -264,3 +264,13 @@ function renderBeachList(beaches) {
         listContainer.appendChild(item);
     });
 }
+
+document.querySelectorAll('.legend-item').forEach(button => {
+    button.addEventListener('click', () => {
+        const type = button.dataset.filter;
+        filterMarkers(type);
+
+        document.querySelectorAll('.legend-item').forEach(btn => btn.classList.remove('active'));
+        button.classList.add('active');
+    });
+});
