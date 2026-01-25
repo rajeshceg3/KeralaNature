@@ -194,14 +194,16 @@ function renderBeachList(beaches) {
 
     beaches.forEach(beach => {
         const item = document.createElement('div');
-        item.className = `beach-list-item ${beach.type}`;
+        item.className = `beach-card ${beach.type}`;
         item.setAttribute('role', 'button');
         item.setAttribute('tabindex', '0');
         item.setAttribute('aria-label', `View details for ${beach.name}`);
         item.innerHTML = `
             <div class="item-icon"></div>
-            <span class="item-name">${sanitizeHTML(beach.name)}</span>
-            <span class="item-type">${sanitizeHTML(beach.type)}</span>
+            <div class="card-content">
+                <span class="item-name">${sanitizeHTML(beach.name)}</span>
+                <span class="item-type">${sanitizeHTML(beach.type)}</span>
+            </div>
         `;
 
         // Interaction
