@@ -65,6 +65,7 @@ function initializeMap(beachesData) {
     }).addTo(map);
 
     // Define color scheme for different beach types
+    // NOTE: These must be 6-digit HEX codes for the alpha transparency (DD) to work correctly below.
     const beachColors = {
         popular: '#f093fb', // Pinkish-purple
         serene: '#4facfe',  // Light blue
@@ -90,32 +91,33 @@ function initializeMap(beachesData) {
                 <div class="pin-wrapper">
                     <div class="pin-pulse" style="background: ${color}"></div>
                     <div class="pin" style="
-                        background: linear-gradient(135deg, ${color}, ${color}); /* Fallback */
-                        background: linear-gradient(135deg, ${color} 0%, rgba(0,0,0,0.2) 100%);
-                        background-blend-mode: multiply;
-                        background-color: ${color};
-                        width: 32px;
-                        height: 32px;
+                        background: ${color};
+                        background: linear-gradient(135deg, ${color}, ${color}DD);
+                        width: 36px;
+                        height: 36px;
                         border-radius: 50% 50% 50% 0;
                         transform: rotate(-45deg);
-                        box-shadow: 0 4px 15px rgba(0,0,0,0.25);
+                        box-shadow:
+                            0 10px 25px rgba(0,0,0,0.3),
+                            inset 0 2px 2px rgba(255,255,255,0.4);
                         display: flex;
                         align-items: center;
                         justify-content: center;
                         position: relative;
-                        border: 2px solid white;
+                        border: 3px solid white;
                     ">
                         <i class="ph ${iconClass}" style="
                             transform: rotate(45deg);
-                            font-size: 16px;
+                            font-size: 18px;
                             color: white;
+                            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
                         "></i>
                     </div>
                 </div>
             `,
-            iconSize: [36, 36],
-            iconAnchor: [18, 36], // Point of the icon which will correspond to marker's location
-            popupAnchor: [0, -40] // Point from which the popup should open relative to the iconAnchor
+            iconSize: [40, 40],
+            iconAnchor: [20, 40], // Point of the icon which will correspond to marker's location
+            popupAnchor: [0, -45] // Point from which the popup should open relative to the iconAnchor
         });
     }
 
