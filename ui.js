@@ -51,9 +51,10 @@ function createPopupContent(beach) {
                 <div class="beach-features">
                     ${features}
                 </div>
-                <div class="beach-rating">
-                    <span class="stars">${stars}</span>
-                    <span class="rating-text">${beach.rating}/5 (${beach.reviews} reviews)</span>
+                <div class="beach-rating" aria-label="Rating: ${beach.rating} out of 5 stars">
+                    <span class="stars" aria-hidden="true">${stars}</span>
+                    <span class="rating-text" aria-hidden="true">${beach.rating}/5 (${beach.reviews} reviews)</span>
+                    <span class="sr-only">Rated ${beach.rating} out of 5 stars based on ${beach.reviews} reviews</span>
                 </div>
                 <div class="beach-actions">
                     <button class="action-btn add-memory-btn">Add Memory</button>
@@ -209,19 +210,31 @@ function renderBeachList(beaches) {
         // Interaction
         const handleClick = () => {
             if (window.innerWidth > 768 && map) {
-                map.flyTo([beach.lat, beach.lng], 14, {
-                    animate: true,
-                    duration: 1.5
-                });
+                const targetLatLng = L.latLng(beach.lat, beach.lng);
+                // Check if we are already close enough to avoid flyTo race condition
+                const isClose = map.getCenter().distanceTo(targetLatLng) < 100 && map.getZoom() === 14;
 
-                // Open popup after fly
-                map.once('moveend', () => {
+                if (isClose) {
                     map.eachLayer((layer) => {
                         if (layer instanceof L.Marker && layer.options.title === beach.name) {
                             layer.openPopup();
                         }
                     });
-                });
+                } else {
+                    map.flyTo(targetLatLng, 14, {
+                        animate: true,
+                        duration: 1.5
+                    });
+
+                    // Open popup after fly
+                    map.once('moveend', () => {
+                        map.eachLayer((layer) => {
+                            if (layer instanceof L.Marker && layer.options.title === beach.name) {
+                                layer.openPopup();
+                            }
+                        });
+                    });
+                }
             }
         };
 

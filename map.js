@@ -78,12 +78,13 @@ function initializeMap(beachesData) {
      * @returns {L.DivIcon} A Leaflet DivIcon object.
      */
     function createCustomIcon(type) {
-        const color = beachColors[type];
+        const color = beachColors[type] || '#0F4C5C'; // Fallback to primary color
         // Using Phosphor icons instead of emoji
         let iconClass = 'ph-beach-ball'; // default
         if (type === 'popular') iconClass = 'ph-users-three';
-        if (type === 'serene') iconClass = 'ph-sun-horizon';
-        if (type === 'adventure') iconClass = 'ph-person-simple-swim';
+        else if (type === 'serene') iconClass = 'ph-sun-horizon';
+        else if (type === 'adventure') iconClass = 'ph-person-simple-swim';
+        else iconClass = 'ph-map-pin'; // Fallback icon
 
         return L.divIcon({
             className: 'custom-marker', // Class for CSS styling and animations

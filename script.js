@@ -12,6 +12,8 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .catch(error => {
             console.error('Error loading beach data:', error);
+            // Ensure loading screen is hidden so error is visible
+            document.getElementById('loadingScreen').classList.add('hidden');
             const mapContainer = document.getElementById('map');
             mapContainer.innerHTML = `
                 <div style="display: flex; align-items: center; justify-content: center; height: 100%;
