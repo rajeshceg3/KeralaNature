@@ -268,3 +268,32 @@ function initializeMap(beachesData) {
         }
     });
 }
+
+/**
+ * Filters map markers and sidebar list items by beach type.
+ * @param {string} type - The type of beach to filter by (all, popular, serene, adventure).
+ */
+function filterMarkers(type) {
+    // Filter Map Markers
+    beachMarkers.forEach(marker => {
+        if (type === 'all' || marker.beachData.type === type) {
+            if (!map.hasLayer(marker)) {
+                marker.addTo(map);
+            }
+        } else {
+            if (map.hasLayer(marker)) {
+                map.removeLayer(marker);
+            }
+        }
+    });
+
+    // Filter Sidebar List Items
+    const listItems = document.querySelectorAll('.beach-card');
+    listItems.forEach(item => {
+        if (type === 'all' || item.classList.contains(type)) {
+            item.style.display = 'flex';
+        } else {
+            item.style.display = 'none';
+        }
+    });
+}

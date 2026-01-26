@@ -6,11 +6,9 @@ document.addEventListener('DOMContentLoaded', function() {
             beaches = data;
             loadMemories(); // Load memories from localStorage
             // Hide loading screen and initialize map
-            setTimeout(() => {
-                 document.getElementById('loadingScreen').classList.add('hidden');
-                 initializeMap(beaches); // Initialize the map after loading screen hides
-                 renderBeachList(beaches); // Populate the sidebar list (Desktop)
-            }, 800); // Artificial delay for smoothness and to show off the loader
+            document.getElementById('loadingScreen').classList.add('hidden');
+            initializeMap(beaches); // Initialize the map after loading screen hides
+            renderBeachList(beaches); // Populate the sidebar list (Desktop)
         })
         .catch(error => {
             console.error('Error loading beach data:', error);
