@@ -40,7 +40,22 @@ function loadMemories() {
     beaches.forEach(beach => {
         const storedMemories = localStorage.getItem(beach.name);
         if (storedMemories) {
-            beach.memories = JSON.parse(storedMemories);
+            try {
+                const parsed = JSON.parse(storedMemories);
+                // Validate that it's an array as expected
+                if (Array.isArray(parsed)) {
+                    beach.memories = parsed;
+                } else {
+                    console.warn(`Invalid memory format for ${beach.name}, expected array.`);
+                    beach.memories = [];
+                }
+            } catch (e) {
+                console.error(`Error parsing memories for ${beach.name}:`, e);
+                // Graceful recovery: start fresh for this beach
+                beach.memories = [];
+                // Optional: clear the corrupted data
+                // localStorage.removeItem(beach.name);
+            }
         }
     });
 }

@@ -1,0 +1,16 @@
+{
+  "name": "Kerala's Pristine Beaches",
+  "short_name": "Kerala Beaches",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#F0F4F8",
+  "theme_color": "#0F4C5C",
+  "description": "Discover the emerald coast of God's Own Country.",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml"
+    }
+  ]
+}
