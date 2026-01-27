@@ -1,6 +1,6 @@
 // Service Worker for caching static assets
 
-const CACHE_NAME = 'kerala-beaches-cache-v2';
+const CACHE_NAME = 'kerala-beaches-cache-v3';
 const urlsToCache = [
     '/',
     '/index.html',
@@ -10,7 +10,8 @@ const urlsToCache = [
     '/beaches.json',
     'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css',
     'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js',
-    'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;600;700&display=swap'
+    'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;600;700&display=swap',
+    'https://unpkg.com/@phosphor-icons/web'
 ];
 
 // Install the service worker and cache static assets
