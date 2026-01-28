@@ -29,7 +29,7 @@ self.addEventListener('fetch', event => {
     const requestUrl = new URL(event.request.url);
 
     // Strategy for map tiles: Cache first, then network
-    if (requestUrl.hostname.endsWith('tile.openstreetmap.org')) {
+    if (requestUrl.hostname.endsWith('tile.openstreetmap.org') || requestUrl.hostname.includes('cartocdn.com')) {
         event.respondWith(
             caches.match(event.request).then(response => {
                 return response || fetch(event.request).then(fetchResponse => {
