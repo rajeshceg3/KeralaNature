@@ -41,24 +41,67 @@ function createPopupContent(beach) {
         `<span class="feature-tag">${sanitizeHTML(feature)}</span>`
     ).join(''); // Join them into a single string
 
+    // Get weather data (assuming getWeather is globally available from script.js)
+    let weather = { temp: '--', icon: 'ph-sun', condition: 'Sunny' };
+    if (typeof getWeather === 'function') {
+        weather = getWeather(beach.lat, beach.lng);
+    }
+
+    // Check itinerary status
+    const isInItinerary = typeof itinerary !== 'undefined' && itinerary.includes(beach.name);
+    const itineraryBtnText = isInItinerary ? 'Remove from Itinerary' : 'Add to Itinerary';
+    const itineraryBtnClass = isInItinerary ? 'action-btn itinerary-btn active' : 'action-btn itinerary-btn';
+
+    // Image HTML
+    const imageHtml = beach.imageUrl ?
+        `<img src="${beach.imageUrl}" alt="${sanitizeHTML(beach.name)}" class="popup-hero-image">` : '';
+
     return `
         <div class="beach-popup">
+            ${imageHtml}
             <div class="popup-header">
-                <h3>${sanitizeHTML(beach.name)}</h3>
+                <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                    <h3 style="margin-right: 10px;">${sanitizeHTML(beach.name)}</h3>
+                    <div class="weather-widget">
+                        <i class="ph ${weather.icon}"></i> ${weather.temp}°C
+                    </div>
+                </div>
             </div>
             <div class="popup-content">
                 <p>${sanitizeHTML(beach.description)}</p>
-                <div class="beach-features">
+
+                <div class="popup-section">
+                    <h4>Best Time</h4>
+                    <p>${sanitizeHTML(beach.bestTime || 'Year-round')}</p>
+                </div>
+
+                <div class="popup-section">
+                    <h4>Activities</h4>
+                    <ul>
+                        ${(beach.activities || []).map(act => `<li>${sanitizeHTML(act)}</li>`).join('')}
+                    </ul>
+                </div>
+
+                <div class="popup-section">
+                    <h4>Accessibility</h4>
+                    <p>${sanitizeHTML(beach.accessibility || 'Information not available')}</p>
+                </div>
+
+                <div class="beach-features" style="margin-top: 1rem;">
                     ${features}
                 </div>
+
                 <div class="beach-rating" aria-label="Rating: ${beach.rating} out of 5 stars">
                     <span class="stars" aria-hidden="true">${stars}</span>
                     <span class="rating-text" aria-hidden="true">${beach.rating}/5 (${beach.reviews} reviews)</span>
-                    <span class="sr-only">Rated ${beach.rating} out of 5 stars based on ${beach.reviews} reviews</span>
                 </div>
-                <div class="beach-actions">
-                    <button class="action-btn add-memory-btn">Add Memory</button>
-                    <button class="action-btn view-memories-btn">View Memories</button>
+
+                <div class="beach-actions" style="grid-template-columns: 1fr; gap: 0.5rem;">
+                    <button class="${itineraryBtnClass}" style="width:100%; margin-bottom:0.5rem;" onclick="toggleItinerary('${sanitizeHTML(beach.name).replace(/'/g, "\\'")}')">${itineraryBtnText}</button>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem;">
+                        <button class="action-btn add-memory-btn">Add Memory</button>
+                        <button class="action-btn view-memories-btn">View Memories</button>
+                    </div>
                 </div>
             </div>
         </div>

@@ -8,7 +8,11 @@
         "features": ["Lighthouse", "Ayurvedic Spas", "Surfing", "Fine Dining"],
         "rating": 4.7,
         "reviews": 2847,
-        "memories": []
+        "memories": [],
+        "bestTime": "September to March",
+        "activities": ["Lighthouse climbing", "Surfing lessons", "Catamaran rides", "Sunset viewing"],
+        "accessibility": "Wheelchair accessible promenade",
+        "imageUrl": "https://placehold.co/800x400/0F4C5C/FFFFFF?text=Kovalam+Beach"
     },
     {
         "name": "Varkala Beach",
@@ -19,7 +23,11 @@
         "features": ["Cliff Views", "Mineral Springs", "Yoga Retreats", "Sunset Cafes"],
         "rating": 4.6,
         "reviews": 1923,
-        "memories": []
+        "memories": [],
+        "bestTime": "October to March",
+        "activities": ["Yoga on the cliff", "Paragliding", "Mineral spring bath", "Shopping"],
+        "accessibility": "Steep steps to beach, cliff top is accessible",
+        "imageUrl": "https://placehold.co/800x400/0F4C5C/FFFFFF?text=Varkala+Beach"
     },
     {
         "name": "Alleppey Beach",
@@ -30,7 +38,11 @@
         "features": ["Backwaters", "Houseboats", "Historic Pier", "Lighthouse"],
         "rating": 4.5,
         "reviews": 3156,
-        "memories": []
+        "memories": [],
+        "bestTime": "November to February",
+        "activities": ["Houseboat cruise", "Visit the old pier", "Beach festival", "Picnics"],
+        "accessibility": "Accessible park area nearby",
+        "imageUrl": "https://placehold.co/800x400/0F4C5C/FFFFFF?text=Alleppey+Beach"
     },
     {
         "name": "Cherai Beach",
@@ -41,7 +53,11 @@
         "features": ["Golden Sand", "Swimming", "Backwaters", "Paddy Fields"],
         "rating": 4.4,
         "reviews": 1567,
-        "memories": []
+        "memories": [],
+        "bestTime": "October to March",
+        "activities": ["Swimming", "Dolphin watching", "Shell collecting", "Kite flying"],
+        "accessibility": "Moderate accessibility",
+        "imageUrl": "https://placehold.co/800x400/0F4C5C/FFFFFF?text=Cherai+Beach"
     },
     {
         "name": "Marari Beach",
@@ -52,7 +68,11 @@
         "features": ["Pristine Waters", "Coconut Groves", "Fishing Village", "Peaceful"],
         "rating": 4.8,
         "reviews": 1234,
-        "memories": []
+        "memories": [],
+        "bestTime": "December to March",
+        "activities": ["Village walks", "Butterfly watching", "Ayurveda", "Doing nothing"],
+        "accessibility": "Limited accessibility",
+        "imageUrl": "https://placehold.co/800x400/0F4C5C/FFFFFF?text=Marari+Beach"
     },
     {
         "name": "Bekal Beach",
@@ -63,7 +83,11 @@
         "features": ["Historic Fort", "Archaeology", "Photography", "Trekking"],
         "rating": 4.6,
         "reviews": 2087,
-        "memories": []
+        "memories": [],
+        "bestTime": "October to March",
+        "activities": ["Exploring Bekal Fort", "Sunset from the ramparts", "Light and sound show", "Trekking"],
+        "accessibility": "Fort has some accessible paths",
+        "imageUrl": "https://placehold.co/800x400/0F4C5C/FFFFFF?text=Bekal+Beach"
     },
     {
         "name": "Kannur Beach",
@@ -74,7 +98,11 @@
         "features": ["Cultural Sites", "Clean Waters", "Local Cuisine", "Theyyam"],
         "rating": 4.3,
         "reviews": 1456,
-        "memories": []
+        "memories": [],
+        "bestTime": "December to April (Theyyam season)",
+        "activities": ["Watching Theyyam", "Sampling Malabar snacks", "Swimming", "Visiting St. Angelo Fort"],
+        "accessibility": "Good access to main areas",
+        "imageUrl": "https://placehold.co/800x400/0F4C5C/FFFFFF?text=Kannur+Beach"
     },
     {
         "name": "Muzhappilangad Beach",
@@ -85,7 +113,11 @@
         "features": ["Drive-in Beach", "Adventure Sports", "Unique Experience", "Photography"],
         "rating": 4.5,
         "reviews": 1789,
-        "memories": []
+        "memories": [],
+        "bestTime": "September to May",
+        "activities": ["Beach driving", "Paragliding", "Power boating", "Bird watching"],
+        "accessibility": "Fully accessible by car",
+        "imageUrl": "https://placehold.co/800x400/0F4C5C/FFFFFF?text=Muzhappilangad+Beach"
     },
     {
         "name": "Kappad Beach",
@@ -96,7 +128,11 @@
         "features": ["Historical Site", "Vasco da Gama", "Rock Formations", "Peaceful"],
         "rating": 4.2,
         "reviews": 1123,
-        "memories": []
+        "memories": [],
+        "bestTime": "October to March",
+        "activities": ["Visiting the stone monument", "Exploring rock formations", "Sunset viewing", "Picnics"],
+        "accessibility": "Accessible promenade",
+        "imageUrl": "https://placehold.co/800x400/0F4C5C/FFFFFF?text=Kappad+Beach"
     },
     {
         "name": "Payyambalam Beach",
@@ -107,7 +143,11 @@
         "features": ["Beach Park", "Family Friendly", "Sculptures", "Evening Walks"],
         "rating": 4.4,
         "reviews": 1334,
-        "memories": []
+        "memories": [],
+        "bestTime": "Year-round",
+        "activities": ["Playing in the park", "Surfing", "Viewing sculptures", "Evening walk"],
+        "accessibility": "Good accessibility",
+        "imageUrl": "https://placehold.co/800x400/0F4C5C/FFFFFF?text=Payyambalam+Beach"
     },
     {
         "name": "Kizhunna Beach",
@@ -118,7 +158,11 @@
         "features": ["Black Rocks", "Clear Waters", "Secluded", "Photography"],
         "rating": 4.5,
         "reviews": 892,
-        "memories": []
+        "memories": [],
+        "bestTime": "October to May",
+        "activities": ["Snorkeling", "Sunbathing", "Photography", "Relaxing"],
+        "accessibility": "Limited accessibility",
+        "imageUrl": "https://placehold.co/800x400/0F4C5C/FFFFFF?text=Kizhunna+Beach"
     },
     {
         "name": "Thirumullavaram Beach",
@@ -129,7 +173,11 @@
         "features": ["Golden Sand", "Gentle Waves", "Peaceful", "Pristine"],
         "rating": 4.3,
         "reviews": 756,
-        "memories": []
+        "memories": [],
+        "bestTime": "September to March",
+        "activities": ["Swimming", "Morning walks", "Meditation", "Temple visit"],
+        "accessibility": "Moderate accessibility",
+        "imageUrl": "https://placehold.co/800x400/0F4C5C/FFFFFF?text=Thirumullavaram+Beach"
     },
     {
         "name": "Shanghumukham Beach",
@@ -140,7 +188,11 @@
         "features": ["Sunset Views", "Modern Amenities", "Airport Proximity", "Restaurants"],
         "rating": 4.1,
         "reviews": 1678,
-        "memories": []
+        "memories": [],
+        "bestTime": "Year-round",
+        "activities": ["Watching planes land", "Visiting 'Jalakanyaka' sculpture", "Dining", "Sunset watching"],
+        "accessibility": "Excellent accessibility",
+        "imageUrl": "https://placehold.co/800x400/0F4C5C/FFFFFF?text=Shanghumukham+Beach"
     },
     {
         "name": "Nattika Beach",
@@ -151,7 +203,11 @@
         "features": ["Minimal Crowds", "Authentic Experience", "Fishing", "Tranquil"],
         "rating": 4.4,
         "reviews": 543,
-        "memories": []
+        "memories": [],
+        "bestTime": "October to March",
+        "activities": ["Experience village life", "Elephant rides", "Boat rides", "Fishing"],
+        "accessibility": "Limited accessibility",
+        "imageUrl": "https://placehold.co/800x400/0F4C5C/FFFFFF?text=Nattika+Beach"
     },
     {
         "name": "Kappil Beach",
@@ -162,6 +218,10 @@
         "features": ["Backwater Confluence", "Kayaking", "Unique Landscape", "Exploration"],
         "rating": 4.6,
         "reviews": 1087,
-        "memories": []
+        "memories": [],
+        "bestTime": "September to March",
+        "activities": ["Kayaking", "Boating", "Photography", "Nature walks"],
+        "accessibility": "Bridge is accessible, beach areas vary",
+        "imageUrl": "https://placehold.co/800x400/0F4C5C/FFFFFF?text=Kappil+Beach"
     }
 ]
