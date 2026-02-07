@@ -1003,6 +1003,122 @@
             outline-offset: 2px;
             box-shadow: 0 0 0 4px rgba(15, 76, 92, 0.2);
         }
+
+        /* Search Bar */
+        .search-container {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .search-bar {
+            width: 100%;
+            padding: 0.8rem 1rem 0.8rem 2.5rem;
+            border: 1px solid var(--glass-border);
+            border-radius: var(--border-radius-sm);
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(10px);
+            font-family: var(--font-body);
+            font-size: 0.95rem;
+            color: var(--text-primary);
+            transition: var(--transition-smooth);
+        }
+
+        .search-bar:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            border-color: var(--color-primary);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            pointer-events: none;
+        }
+
+        /* Itinerary Section */
+        .itinerary-section {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .itinerary-empty {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            font-style: italic;
+            text-align: center;
+            padding: 1rem;
+            background: rgba(255,255,255,0.3);
+            border-radius: var(--border-radius-sm);
+        }
+
+        /* Weather Widget */
+        .weather-widget {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(255,255,255,0.2);
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: white;
+            margin-top: 0.5rem;
+            width: fit-content;
+        }
+
+        /* Hero Image in Popup */
+        .popup-hero-image {
+            width: 100%;
+            height: 140px;
+            object-fit: cover;
+            display: block;
+        }
+
+        /* Popup Sections */
+        .popup-section {
+            margin-top: 1rem;
+        }
+
+        .popup-section h4 {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-light);
+            margin-bottom: 0.4rem;
+            font-weight: 700;
+            font-family: var(--font-body);
+        }
+
+        .popup-section p, .popup-section ul {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin: 0;
+            line-height: 1.5;
+        }
+
+        .popup-section ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .popup-section li {
+            margin-bottom: 0.2rem;
+            padding-left: 1rem;
+            position: relative;
+        }
+
+        .popup-section li::before {
+            content: '•';
+            position: absolute;
+            left: 0;
+            color: var(--color-primary);
+        }
     </style>
 </head>
 <body>
@@ -1031,6 +1147,12 @@
                 <h1>Kerala's Pristine Beaches</h1>
                 <p>Discover the emerald coast of God's Own Country, where golden sands meet azure waters in perfect harmony</p>
 
+                <!-- Search Bar -->
+                <div class="search-container">
+                    <i class="ph ph-magnifying-glass search-icon"></i>
+                    <input type="text" id="search-input" class="search-bar" placeholder="Find your paradise..." aria-label="Search beaches">
+                </div>
+
                 <div class="header-stats">
                     <div class="stat-item">
                         <span class="stat-number">15+</span>
@@ -1048,6 +1170,14 @@
         <div id="beach-list-container">
             <h3 class="beach-list-title">Explore Locations</h3>
             <div id="beach-list" class="beach-list">
+                <!-- Populated via JS -->
+            </div>
+        </div>
+
+        <!-- My Itinerary -->
+        <div id="itinerary-container" class="itinerary-section" style="display: none;">
+            <h3 class="beach-list-title"><i class="ph ph-suitcase-rolling" style="color: var(--color-accent); margin-right: 8px;"></i> My Itinerary</h3>
+            <div id="itinerary-list" class="beach-list">
                 <!-- Populated via JS -->
             </div>
         </div>

@@ -5,10 +5,13 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(data => {
             beaches = data;
             loadMemories(); // Load memories from localStorage
+            loadItinerary(); // Load itinerary from localStorage
+
             // Hide loading screen and initialize map
             document.getElementById('loadingScreen').classList.add('hidden');
             initializeMap(beaches); // Initialize the map after loading screen hides
             renderBeachList(beaches); // Populate the sidebar list (Desktop)
+            renderItineraryList(); // Populate itinerary list
         })
         .catch(error => {
             console.error('Error loading beach data:', error);
@@ -29,9 +32,49 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
             `;
         });
+
+    // Search functionality
+    const searchInput = document.getElementById('search-input');
+    if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+
+            // Filter beaches
+            const filteredBeaches = beaches.filter(beach =>
+                beach.name.toLowerCase().includes(searchTerm) ||
+                beach.description.toLowerCase().includes(searchTerm)
+            );
+
+            // Update UI
+            renderBeachList(filteredBeaches);
+
+            // Update Map Markers
+            // We need to access markers from map.js. Assuming beachMarkers is global or accessible.
+            // Since beachMarkers is defined in map.js (which is loaded before script.js usually, but let's check order),
+            // actually map.js is loaded BEFORE script.js in index.html, so global vars might be available if not scoped.
+            // Let's check map.js scope. It uses 'let beachMarkers = []' at top level.
+            if (typeof beachMarkers !== 'undefined') {
+                beachMarkers.forEach(marker => {
+                    const isVisible = marker.beachData.name.toLowerCase().includes(searchTerm) ||
+                                      marker.beachData.description.toLowerCase().includes(searchTerm);
+
+                    if (isVisible) {
+                        if (!map.hasLayer(marker)) {
+                            marker.addTo(map);
+                        }
+                    } else {
+                        if (map.hasLayer(marker)) {
+                            map.removeLayer(marker);
+                        }
+                    }
+                });
+            }
+        });
+    }
 });
 
 let beaches = [];
+let itinerary = [];
 
 /**
  * Loads memories for all beaches from local storage.
@@ -59,6 +102,154 @@ function loadMemories() {
         }
     });
 }
+
+/**
+ * Loads itinerary from local storage.
+ */
+function loadItinerary() {
+    const storedItinerary = localStorage.getItem('kerala_beach_itinerary');
+    if (storedItinerary) {
+        try {
+            itinerary = JSON.parse(storedItinerary);
+        } catch (e) {
+            console.error('Error parsing itinerary:', e);
+            itinerary = [];
+        }
+    }
+}
+
+/**
+ * Saves itinerary to local storage.
+ */
+function saveItinerary() {
+    localStorage.setItem('kerala_beach_itinerary', JSON.stringify(itinerary));
+    renderItineraryList();
+}
+
+/**
+ * Toggles a beach in the itinerary.
+ * @param {string} beachName - The name of the beach.
+ */
+function toggleItinerary(beachName) {
+    const index = itinerary.indexOf(beachName);
+    if (index === -1) {
+        itinerary.push(beachName);
+        // Show feedback (could be a toast, but using alert for now or just UI update)
+    } else {
+        itinerary.splice(index, 1);
+    }
+    saveItinerary();
+
+    // Update button text if popup is open
+    const btn = document.querySelector('.itinerary-btn');
+    if (btn) {
+        const isInItinerary = itinerary.includes(beachName);
+        btn.textContent = isInItinerary ? 'Remove from Itinerary' : 'Add to Itinerary';
+        btn.classList.toggle('active', isInItinerary);
+    }
+}
+
+/**
+ * Renders the itinerary list in the sidebar.
+ */
+function renderItineraryList() {
+    const container = document.getElementById('itinerary-container');
+    const list = document.getElementById('itinerary-list');
+
+    if (!container || !list) return;
+
+    if (itinerary.length === 0) {
+        container.style.display = 'none';
+        list.innerHTML = '';
+        return;
+    }
+
+    container.style.display = 'block';
+    list.innerHTML = '';
+
+    itinerary.forEach(beachName => {
+        const beach = beaches.find(b => b.name === beachName);
+        if (!beach) return;
+
+        const item = document.createElement('div');
+        item.className = `beach-card ${beach.type}`;
+        item.style.marginBottom = '0.5rem';
+        item.setAttribute('role', 'button');
+        item.setAttribute('tabindex', '0');
+        item.innerHTML = `
+            <div class="item-icon"></div>
+            <div class="card-content">
+                <span class="item-name">${sanitizeHTML(beach.name)}</span>
+            </div>
+            <button class="remove-itinerary-btn" style="background:none; border:none; cursor:pointer; color:var(--text-light); margin-left:auto;" aria-label="Remove ${beach.name} from itinerary">
+                <i class="ph ph-x"></i>
+            </button>
+        `;
+
+        // Click to fly to beach
+        item.addEventListener('click', (e) => {
+            if (e.target.closest('.remove-itinerary-btn')) return;
+
+            if (window.innerWidth > 768 && map) {
+                map.flyTo([beach.lat, beach.lng], 14, { animate: true, duration: 1.5 });
+                map.once('moveend', () => {
+                    map.eachLayer((layer) => {
+                        if (layer instanceof L.Marker && layer.options.title === beach.name) {
+                            layer.openPopup();
+                        }
+                    });
+                });
+            } else if (window.innerWidth <= 768) {
+                // Mobile behavior
+                 map.eachLayer((layer) => {
+                    if (layer instanceof L.Marker && layer.options.title === beach.name) {
+                        // Trigger click logic manually since marker might be hidden or far
+                        // Actually we should just call the open logic
+                        // But map.js encapsulates it. Let's rely on finding the marker.
+                        layer.fire('click');
+                    }
+                });
+            }
+        });
+
+        // Remove button
+        item.querySelector('.remove-itinerary-btn').addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleItinerary(beach.name);
+        });
+
+        list.appendChild(item);
+    });
+}
+
+/**
+ * Generates a mock weather object based on location.
+ * @param {number} lat - Latitude.
+ * @param {number} lng - Longitude.
+ * @returns {object} Weather object { temp: number, condition: string, icon: string }
+ */
+function getWeather(lat, lng) {
+    // Deterministic pseudo-random based on lat/lng to be consistent per reload
+    const seed = lat + lng;
+    const tempBase = 28; // Average Kerala temp
+    const tempVar = (Math.sin(seed * 100) * 3); // +/- 3 degrees
+    const temp = Math.round(tempBase + tempVar);
+
+    const conditions = [
+        { text: 'Sunny', icon: 'ph-sun' },
+        { text: 'Partly Cloudy', icon: 'ph-cloud-sun' },
+        { text: 'Breezy', icon: 'ph-wind' }
+    ];
+
+    const condIndex = Math.abs(Math.floor(Math.sin(seed * 1000) * conditions.length)) % conditions.length;
+
+    return {
+        temp: temp,
+        condition: conditions[condIndex].text,
+        icon: conditions[condIndex].icon
+    };
+}
+
 
 /**
  * Resizes an image file to a maximum dimension and returns a base64 string.
