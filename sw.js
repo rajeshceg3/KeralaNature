@@ -66,7 +66,8 @@ self.addEventListener('fetch', event => {
                 .then(response => {
                     return response || fetch(event.request).then(fetchResponse => {
                         // For external resources like Google Fonts, just return the response without caching
-                        if (!event.request.url.startsWith(self.location.origin)) {
+                        // Exception: Cache fonts from Google Fonts (fonts.gstatic.com)
+                        if (!event.request.url.startsWith(self.location.origin) && !event.request.url.includes('fonts.gstatic.com')) {
                             return fetchResponse;
                         }
                         const responseToCache = fetchResponse.clone();

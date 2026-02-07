@@ -83,11 +83,21 @@ function showPhotoGallery(beach) {
         galleryPhotos.innerHTML = '<p>No memories yet. Add one!</p>';
     } else {
         memories.forEach(memory => {
+            const figure = document.createElement('figure');
+            figure.className = 'gallery-figure';
+
             const img = document.createElement('img');
             img.src = memory.photo;
             img.alt = memory.note;
             img.className = 'gallery-photo';
-            galleryPhotos.appendChild(img);
+
+            const caption = document.createElement('figcaption');
+            caption.className = 'gallery-caption';
+            caption.textContent = memory.note;
+
+            figure.appendChild(img);
+            figure.appendChild(caption);
+            galleryPhotos.appendChild(figure);
         });
     }
 
