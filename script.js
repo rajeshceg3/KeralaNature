@@ -200,15 +200,12 @@ function renderItineraryList() {
                     });
                 });
             } else if (window.innerWidth <= 768) {
-                // Mobile behavior
-                 map.eachLayer((layer) => {
-                    if (layer instanceof L.Marker && layer.options.title === beach.name) {
-                        // Trigger click logic manually since marker might be hidden or far
-                        // Actually we should just call the open logic
-                        // But map.js encapsulates it. Let's rely on finding the marker.
-                        layer.fire('click');
-                    }
-                });
+                // Mobile behavior: Use the exposed function to open details directly
+                if (typeof window.openBeachDetails === 'function') {
+                    window.openBeachDetails(beach);
+                } else {
+                    console.error('openBeachDetails function not found');
+                }
             }
         });
 

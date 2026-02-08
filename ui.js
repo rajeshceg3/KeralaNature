@@ -56,6 +56,8 @@ function createPopupContent(beach) {
     const imageHtml = beach.imageUrl ?
         `<img src="${beach.imageUrl}" alt="${sanitizeHTML(beach.name)}" class="popup-hero-image">` : '';
 
+    const safeName = sanitizeHTML(beach.name).replace(/\\/g, "\\\\").replace(/'/g, "\\'");
+
     return `
         <div class="beach-popup">
             ${imageHtml}
@@ -97,7 +99,7 @@ function createPopupContent(beach) {
                 </div>
 
                 <div class="beach-actions" style="grid-template-columns: 1fr; gap: 0.5rem;">
-                    <button class="${itineraryBtnClass}" style="width:100%; margin-bottom:0.5rem;" onclick="toggleItinerary('${sanitizeHTML(beach.name).replace(/'/g, "\\'")}')">${itineraryBtnText}</button>
+                        <button class="${itineraryBtnClass}" style="width:100%; margin-bottom:0.5rem;" onclick="toggleItinerary('${safeName}')">${itineraryBtnText}</button>
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem;">
                         <button class="action-btn add-memory-btn">Add Memory</button>
                         <button class="action-btn view-memories-btn">View Memories</button>
@@ -113,9 +115,17 @@ function createPopupContent(beach) {
  * @param {object} beach - The beach data object.
  */
 function showPhotoGallery(beach) {
+    const triggerElement = document.activeElement; // Store element that opened modal
     const galleryModal = document.getElementById('photo-gallery');
     const galleryPhotos = document.getElementById('gallery-photos');
     const closeGallery = document.querySelector('.close-gallery');
+
+    // Add aria-label if missing
+    if (!closeGallery.hasAttribute('aria-label')) {
+        closeGallery.setAttribute('aria-label', 'Close gallery');
+        closeGallery.setAttribute('role', 'button');
+        closeGallery.setAttribute('tabindex', '0');
+    }
 
     galleryPhotos.innerHTML = ''; // Clear previous photos
 
@@ -156,8 +166,10 @@ function showPhotoGallery(beach) {
         galleryModal.querySelector('.photo-gallery-content').style.transform = 'scale(0.9)';
         setTimeout(() => {
             galleryModal.style.display = 'none';
+            if (triggerElement) triggerElement.focus(); // Restore focus
         }, 300);
         window.removeEventListener('keydown', handleEsc);
+        galleryModal.removeEventListener('keydown', trapFocus);
     };
 
     const handleEsc = (event) => {
@@ -166,14 +178,51 @@ function showPhotoGallery(beach) {
         }
     };
 
+    // Focus Trap Logic
+    const trapFocus = (e) => {
+        const focusableElements = galleryModal.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+        if (focusableElements.length === 0) return;
+
+        const firstElement = focusableElements[0];
+        const lastElement = focusableElements[focusableElements.length - 1];
+
+        if (e.key === 'Tab') {
+            if (e.shiftKey) { /* shift + tab */
+                if (document.activeElement === firstElement) {
+                    lastElement.focus();
+                    e.preventDefault();
+                }
+            } else { /* tab */
+                if (document.activeElement === lastElement) {
+                    firstElement.focus();
+                    e.preventDefault();
+                }
+            }
+        }
+    };
+
     closeGallery.onclick = closeModal;
+    // Allow closing with Enter on the close button
+    closeGallery.onkeydown = (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            closeModal();
+        }
+    };
+
     window.addEventListener('keydown', handleEsc);
+    galleryModal.addEventListener('keydown', trapFocus);
 
     window.onclick = (event) => {
         if (event.target == galleryModal) {
             closeModal();
         }
     };
+
+    // Set initial focus to close button or first element
+    setTimeout(() => {
+        closeGallery.focus();
+    }, 50);
 }
 
 /**
@@ -181,9 +230,17 @@ function showPhotoGallery(beach) {
  * @param {object} beach - The beach data object.
  */
 function showMemoryModal(beach) {
+    const triggerElement = document.activeElement; // Store element that opened modal
     const memoryModal = document.getElementById('memory-modal');
     const closeMemoryModal = document.querySelector('.close-memory-modal');
     const addMemoryForm = document.getElementById('add-memory-form');
+
+    // Add aria-label if missing
+    if (!closeMemoryModal.hasAttribute('aria-label')) {
+        closeMemoryModal.setAttribute('aria-label', 'Close modal');
+        closeMemoryModal.setAttribute('role', 'button');
+        closeMemoryModal.setAttribute('tabindex', '0');
+    }
 
     memoryModal.style.display = 'block';
      // Animation frame for smooth transition
@@ -197,13 +254,38 @@ function showMemoryModal(beach) {
         memoryModal.querySelector('.memory-modal-content').style.transform = 'scale(0.9)';
         setTimeout(() => {
             memoryModal.style.display = 'none';
+            if (triggerElement) triggerElement.focus(); // Restore focus
         }, 300);
         window.removeEventListener('keydown', handleEsc);
+        memoryModal.removeEventListener('keydown', trapFocus);
     };
 
     const handleEsc = (event) => {
         if (event.key === 'Escape') {
             closeModal();
+        }
+    };
+
+    // Focus Trap Logic
+    const trapFocus = (e) => {
+        const focusableElements = memoryModal.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+        if (focusableElements.length === 0) return;
+
+        const firstElement = focusableElements[0];
+        const lastElement = focusableElements[focusableElements.length - 1];
+
+        if (e.key === 'Tab') {
+            if (e.shiftKey) { /* shift + tab */
+                if (document.activeElement === firstElement) {
+                    lastElement.focus();
+                    e.preventDefault();
+                }
+            } else { /* tab */
+                if (document.activeElement === lastElement) {
+                    firstElement.focus();
+                    e.preventDefault();
+                }
+            }
         }
     };
 
@@ -215,13 +297,30 @@ function showMemoryModal(beach) {
 
     addMemoryForm.onsubmit = handleSubmit;
     closeMemoryModal.onclick = closeModal;
+
+    // Allow closing with Enter on the close button
+    closeMemoryModal.onkeydown = (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            closeModal();
+        }
+    };
+
     window.addEventListener('keydown', handleEsc);
+    memoryModal.addEventListener('keydown', trapFocus);
 
     window.onclick = (event) => {
         if (event.target == memoryModal) {
             closeModal();
         }
     };
+
+    // Set initial focus to input
+    setTimeout(() => {
+        const firstInput = memoryModal.querySelector('input, textarea');
+        if (firstInput) firstInput.focus();
+        else closeMemoryModal.focus();
+    }, 50);
 }
 
 function showGeolocationError() {

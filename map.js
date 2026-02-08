@@ -147,8 +147,17 @@ function initializeMap(beachesData) {
         } else {
             // Desktop: Use default Popup (already bound, just open)
             // Logic handled by Leaflet's bindPopup
+            // But if called externally (e.g. from itinerary), we need to trigger it here
+            map.eachLayer((layer) => {
+                if (layer instanceof L.Marker && layer.options.title === beach.name) {
+                    layer.openPopup();
+                }
+            });
         }
     }
+
+    // Expose openBeachDetails globally
+    window.openBeachDetails = openBeachDetails;
 
     // Iterate over each beach and add a marker to the map
     beaches.forEach((beach, index) => {
@@ -244,7 +253,9 @@ function initializeMap(beachesData) {
 
     // Add a single keyboard event listener for map navigation
     document.addEventListener('keydown', function(e) {
-        if (map && map.isFocused()) {
+        // Check if map container is focused
+        const mapContainer = map.getContainer();
+        if (map && document.activeElement === mapContainer) {
             switch(e.key) {
                 case 'ArrowUp':
                     map.panBy([0, -50]);
