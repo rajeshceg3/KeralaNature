@@ -1,3 +1,8 @@
+let beaches = [];
+let itinerary = [];
+let currentFilter = 'all';
+let currentSearch = '';
+
 // Ensure the DOM is fully loaded before hiding the loading screen and initializing the map
 document.addEventListener('DOMContentLoaded', function() {
     fetch('beaches.json')
@@ -37,44 +42,60 @@ document.addEventListener('DOMContentLoaded', function() {
     const searchInput = document.getElementById('search-input');
     if (searchInput) {
         searchInput.addEventListener('input', (e) => {
-            const searchTerm = e.target.value.toLowerCase();
+            currentSearch = e.target.value.toLowerCase();
+            updateUI();
+        });
+    }
 
-            // Filter beaches
-            const filteredBeaches = beaches.filter(beach =>
-                beach.name.toLowerCase().includes(searchTerm) ||
-                beach.description.toLowerCase().includes(searchTerm)
-            );
+    // Filter functionality
+    document.querySelectorAll('.legend-item').forEach(button => {
+        button.addEventListener('click', () => {
+            currentFilter = button.dataset.filter;
 
-            // Update UI
-            renderBeachList(filteredBeaches);
+            // Update active state
+            document.querySelectorAll('.legend-item').forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
 
-            // Update Map Markers
-            // We need to access markers from map.js. Assuming beachMarkers is global or accessible.
-            // Since beachMarkers is defined in map.js (which is loaded before script.js usually, but let's check order),
-            // actually map.js is loaded BEFORE script.js in index.html, so global vars might be available if not scoped.
-            // Let's check map.js scope. It uses 'let beachMarkers = []' at top level.
-            if (typeof beachMarkers !== 'undefined') {
-                beachMarkers.forEach(marker => {
-                    const isVisible = marker.beachData.name.toLowerCase().includes(searchTerm) ||
-                                      marker.beachData.description.toLowerCase().includes(searchTerm);
+            updateUI();
+        });
+    });
+});
 
-                    if (isVisible) {
-                        if (!map.hasLayer(marker)) {
-                            marker.addTo(map);
-                        }
-                    } else {
-                        if (map.hasLayer(marker)) {
-                            map.removeLayer(marker);
-                        }
-                    }
-                });
+/**
+ * Updates the UI (list and map) based on current filter and search term.
+ */
+function updateUI() {
+    // Filter beaches
+    const filteredBeaches = beaches.filter(beach => {
+        const matchesSearch = beach.name.toLowerCase().includes(currentSearch) ||
+                              beach.description.toLowerCase().includes(currentSearch);
+        const matchesFilter = currentFilter === 'all' || beach.type === currentFilter;
+        return matchesSearch && matchesFilter;
+    });
+
+    // Update List
+    renderBeachList(filteredBeaches);
+
+    // Update Map Markers
+    if (typeof beachMarkers !== 'undefined') {
+        beachMarkers.forEach(marker => {
+            const matchesSearch = marker.beachData.name.toLowerCase().includes(currentSearch) ||
+                                  marker.beachData.description.toLowerCase().includes(currentSearch);
+            const matchesFilter = currentFilter === 'all' || marker.beachData.type === currentFilter;
+            const isVisible = matchesSearch && matchesFilter;
+
+            if (isVisible) {
+                if (!map.hasLayer(marker)) {
+                    marker.addTo(map);
+                }
+            } else {
+                if (map.hasLayer(marker)) {
+                    map.removeLayer(marker);
+                }
             }
         });
     }
-});
-
-let beaches = [];
-let itinerary = [];
+}
 
 /**
  * Loads memories for all beaches from local storage.
@@ -187,9 +208,7 @@ function renderItineraryList() {
         `;
 
         // Click to fly to beach
-        item.addEventListener('click', (e) => {
-            if (e.target.closest('.remove-itinerary-btn')) return;
-
+        const handleBeachClick = () => {
             if (window.innerWidth > 768 && map) {
                 map.flyTo([beach.lat, beach.lng], 14, { animate: true, duration: 1.5 });
                 map.once('moveend', () => {
@@ -210,6 +229,20 @@ function renderItineraryList() {
                     }
                 });
             }
+        };
+
+        item.addEventListener('click', (e) => {
+            if (e.target.closest('.remove-itinerary-btn')) return;
+            handleBeachClick();
+        });
+
+        // Accessibility: Keyboard navigation
+        item.addEventListener('keydown', (e) => {
+             if (e.target.closest('.remove-itinerary-btn')) return;
+             if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                handleBeachClick();
+             }
         });
 
         // Remove button
@@ -358,25 +391,6 @@ function saveBeaches(beach) {
     localStorage.setItem(beach.name, JSON.stringify(memories));
 }
 
-// Global error handling for JavaScript errors during map initialization
-window.addEventListener('error', function(e) {
-    console.error('Map initialization error:', e);
-    const mapContainer = document.getElementById('map');
-    // Display a user-friendly error message within the map container
-    mapContainer.innerHTML = `
-        <div style="display: flex; align-items: center; justify-content: center; height: 100%;
-                   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                   color: white; text-align: center; padding: 2rem; border-radius: var(--border-radius-lg);">
-            <div>
-                <h3>🗺️ Map Loading Issue</h3>
-                <p>We're having trouble loading the interactive map. Please refresh the page to try again.</p>
-                <button onclick="location.reload()" style="background: white; color: #667eea;
-                       border: none; padding: 0.5rem 1rem; border-radius: 20px;
-                       cursor: pointer; margin-top: 1rem; font-weight: 600; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">Refresh Page</button>
-            </div>
-        </div>
-    `;
-});
 
 // Optional: Service Worker registration for offline capabilities (requires sw.js file)
 if ('serviceWorker' in navigator) {

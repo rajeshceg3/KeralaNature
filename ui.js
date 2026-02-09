@@ -54,7 +54,7 @@ function createPopupContent(beach) {
 
     // Image HTML
     const imageHtml = beach.imageUrl ?
-        `<img src="${beach.imageUrl}" alt="${sanitizeHTML(beach.name)}" class="popup-hero-image">` : '';
+        `<img src="${beach.imageUrl}" alt="${sanitizeHTML(beach.name || 'Beach image')}" class="popup-hero-image">` : '';
 
     return `
         <div class="beach-popup">
@@ -119,8 +119,8 @@ function showPhotoGallery(beach) {
 
     galleryPhotos.innerHTML = ''; // Clear previous photos
 
-    const storedMemories = localStorage.getItem(beach.name);
-    const memories = storedMemories ? JSON.parse(storedMemories) : [];
+    // Use in-memory data to prevent crashes from corrupted localStorage
+    const memories = beach.memories || [];
 
     if (memories.length === 0) {
         galleryPhotos.innerHTML = '<p>No memories yet. Add one!</p>';
@@ -331,12 +331,3 @@ function renderBeachList(beaches) {
     });
 }
 
-document.querySelectorAll('.legend-item').forEach(button => {
-    button.addEventListener('click', () => {
-        const type = button.dataset.filter;
-        filterMarkers(type);
-
-        document.querySelectorAll('.legend-item').forEach(btn => btn.classList.remove('active'));
-        button.classList.add('active');
-    });
-});
