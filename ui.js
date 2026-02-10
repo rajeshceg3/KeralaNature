@@ -32,7 +32,7 @@ function getStarRating(rating) {
 /**
  * Creates the HTML content for a beach's popup.
  * @param {object} beach - The beach data object.
- * @returns {string} HTML string for the popup content.
+ * @returns {HTMLElement} The popup content element.
  */
 function createPopupContent(beach) {
     const stars = getStarRating(beach.rating);
@@ -56,8 +56,9 @@ function createPopupContent(beach) {
     const imageHtml = beach.imageUrl ?
         `<img src="${beach.imageUrl}" alt="${sanitizeHTML(beach.name || 'Beach image')}" class="popup-hero-image">` : '';
 
-    return `
-        <div class="beach-popup">
+    const container = document.createElement('div');
+    container.className = 'beach-popup';
+    container.innerHTML = `
             ${imageHtml}
             <div class="popup-header">
                 <div style="display:flex; justify-content:space-between; align-items:flex-start;">
@@ -97,15 +98,23 @@ function createPopupContent(beach) {
                 </div>
 
                 <div class="beach-actions" style="grid-template-columns: 1fr; gap: 0.5rem;">
-                    <button class="${itineraryBtnClass}" style="width:100%; margin-bottom:0.5rem;" onclick="toggleItinerary('${sanitizeHTML(beach.name).replace(/'/g, "\\'")}')">${itineraryBtnText}</button>
+                    <button class="${itineraryBtnClass}" style="width:100%; margin-bottom:0.5rem;">${itineraryBtnText}</button>
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem;">
                         <button class="action-btn add-memory-btn">Add Memory</button>
                         <button class="action-btn view-memories-btn">View Memories</button>
                     </div>
                 </div>
             </div>
-        </div>
     `;
+
+    const itineraryBtn = container.querySelector('.itinerary-btn');
+    if (itineraryBtn) {
+        itineraryBtn.addEventListener('click', () => {
+             toggleItinerary(beach.name);
+        });
+    }
+
+    return container;
 }
 
 /**
@@ -151,29 +160,61 @@ function showPhotoGallery(beach) {
         galleryModal.querySelector('.photo-gallery-content').style.transform = 'scale(1)';
     });
 
+    const handleOutsideClick = (event) => {
+        if (event.target == galleryModal) {
+            closeModal();
+        }
+    };
+
+    // Store the element that triggered the modal to restore focus later
+    const previousActiveElement = document.activeElement;
+
     const closeModal = () => {
         galleryModal.style.opacity = '0';
         galleryModal.querySelector('.photo-gallery-content').style.transform = 'scale(0.9)';
         setTimeout(() => {
             galleryModal.style.display = 'none';
+            if (previousActiveElement) previousActiveElement.focus();
         }, 300);
-        window.removeEventListener('keydown', handleEsc);
+        window.removeEventListener('keydown', handleKeydown);
+        window.removeEventListener('click', handleOutsideClick);
     };
 
-    const handleEsc = (event) => {
+    const handleKeydown = (event) => {
         if (event.key === 'Escape') {
             closeModal();
+        }
+
+        if (event.key === 'Tab') {
+            const focusableElements = galleryModal.querySelectorAll('a[href], button, textarea, input, select');
+            if (focusableElements.length === 0) return;
+
+            const firstElement = focusableElements[0];
+            const lastElement = focusableElements[focusableElements.length - 1];
+
+            if (event.shiftKey) {
+                if (document.activeElement === firstElement) {
+                    lastElement.focus();
+                    event.preventDefault();
+                }
+            } else {
+                if (document.activeElement === lastElement) {
+                    firstElement.focus();
+                    event.preventDefault();
+                }
+            }
         }
     };
 
     closeGallery.onclick = closeModal;
-    window.addEventListener('keydown', handleEsc);
+    window.addEventListener('keydown', handleKeydown);
+    window.addEventListener('click', handleOutsideClick);
 
-    window.onclick = (event) => {
-        if (event.target == galleryModal) {
-            closeModal();
-        }
-    };
+    // Set initial focus to the close button or first interactive element
+    setTimeout(() => {
+        const focusable = galleryModal.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+        if (focusable.length) focusable[0].focus();
+    }, 100);
 }
 
 /**
@@ -183,7 +224,12 @@ function showPhotoGallery(beach) {
 function showMemoryModal(beach) {
     const memoryModal = document.getElementById('memory-modal');
     const closeMemoryModal = document.querySelector('.close-memory-modal');
-    const addMemoryForm = document.getElementById('add-memory-form');
+    let addMemoryForm = document.getElementById('add-memory-form');
+
+    // Clone and replace form to remove previous event listeners cleanly
+    const newForm = addMemoryForm.cloneNode(true);
+    addMemoryForm.parentNode.replaceChild(newForm, addMemoryForm);
+    addMemoryForm = newForm;
 
     memoryModal.style.display = 'block';
      // Animation frame for smooth transition
@@ -192,18 +238,49 @@ function showMemoryModal(beach) {
         memoryModal.querySelector('.memory-modal-content').style.transform = 'scale(1)';
     });
 
+    const handleOutsideClick = (event) => {
+        if (event.target == memoryModal) {
+            closeModal();
+        }
+    };
+
+    // Store the element that triggered the modal to restore focus later
+    const previousActiveElement = document.activeElement;
+
     const closeModal = () => {
         memoryModal.style.opacity = '0';
         memoryModal.querySelector('.memory-modal-content').style.transform = 'scale(0.9)';
         setTimeout(() => {
             memoryModal.style.display = 'none';
+            if (previousActiveElement) previousActiveElement.focus();
         }, 300);
-        window.removeEventListener('keydown', handleEsc);
+        window.removeEventListener('keydown', handleKeydown);
+        window.removeEventListener('click', handleOutsideClick);
     };
 
-    const handleEsc = (event) => {
+    const handleKeydown = (event) => {
         if (event.key === 'Escape') {
             closeModal();
+        }
+
+        if (event.key === 'Tab') {
+            const focusableElements = memoryModal.querySelectorAll('a[href], button, textarea, input, select');
+            if (focusableElements.length === 0) return;
+
+            const firstElement = focusableElements[0];
+            const lastElement = focusableElements[focusableElements.length - 1];
+
+            if (event.shiftKey) {
+                if (document.activeElement === firstElement) {
+                    lastElement.focus();
+                    event.preventDefault();
+                }
+            } else {
+                if (document.activeElement === lastElement) {
+                    firstElement.focus();
+                    event.preventDefault();
+                }
+            }
         }
     };
 
@@ -213,15 +290,17 @@ function showMemoryModal(beach) {
         // Do not close modal here, addMemory does it on success
     };
 
-    addMemoryForm.onsubmit = handleSubmit;
-    closeMemoryModal.onclick = closeModal;
-    window.addEventListener('keydown', handleEsc);
+    addMemoryForm.addEventListener('submit', handleSubmit);
 
-    window.onclick = (event) => {
-        if (event.target == memoryModal) {
-            closeModal();
-        }
-    };
+    closeMemoryModal.onclick = closeModal;
+    window.addEventListener('keydown', handleKeydown);
+    window.addEventListener('click', handleOutsideClick);
+
+    // Set initial focus to the first input field
+    setTimeout(() => {
+        const firstInput = memoryModal.querySelector('input, textarea');
+        if (firstInput) firstInput.focus();
+    }, 100);
 }
 
 function showGeolocationError() {
@@ -264,15 +343,29 @@ function renderBeachList(beaches) {
         const handleClick = () => {
             if (window.innerWidth > 768 && map) {
                 const targetLatLng = L.latLng(beach.lat, beach.lng);
-                // Check if we are already close enough to avoid flyTo race condition
-                const isClose = map.getCenter().distanceTo(targetLatLng) < 100 && map.getZoom() === 14;
+                // Check if we are reasonably close (2km) to avoid long flyTo or if already there
+                const isClose = map.getCenter().distanceTo(targetLatLng) < 2000;
 
-                if (isClose) {
+                const openMarkerPopup = () => {
                     map.eachLayer((layer) => {
                         if (layer instanceof L.Marker && layer.options.title === beach.name) {
                             layer.openPopup();
                         }
                     });
+                };
+
+                if (isClose) {
+                     // If close, verify if zoom is also decent, if not, flyTo (but short distance)
+                     if (map.getZoom() < 12) {
+                         map.flyTo(targetLatLng, 14, { animate: true, duration: 1.0 });
+                         map.once('moveend', openMarkerPopup);
+                     } else {
+                         // Already close and zoomed in enough, just pan and open
+                         map.panTo(targetLatLng);
+                         // Small timeout to ensure pan completes or just open immediately (panTo is animated usually)
+                         // Leaflet panTo returns 'this'
+                         openMarkerPopup();
+                     }
                 } else {
                     map.flyTo(targetLatLng, 14, {
                         animate: true,
@@ -280,13 +373,7 @@ function renderBeachList(beaches) {
                     });
 
                     // Open popup after fly
-                    map.once('moveend', () => {
-                        map.eachLayer((layer) => {
-                            if (layer instanceof L.Marker && layer.options.title === beach.name) {
-                                layer.openPopup();
-                            }
-                        });
-                    });
+                    map.once('moveend', openMarkerPopup);
                 }
             }
         };

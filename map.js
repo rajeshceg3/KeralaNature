@@ -129,20 +129,22 @@ function initializeMap(beachesData) {
             const bottomSheetContent = document.getElementById('bottom-sheet-content');
             const infoPanel = document.getElementById('infoPanel');
 
+            // Create content
+            const content = createPopupContent(beach);
+
+            // Attach event listeners directly to the content element
+            const addMemoryBtn = content.querySelector('.add-memory-btn');
+            const viewMemoriesBtn = content.querySelector('.view-memories-btn');
+            if (addMemoryBtn) addMemoryBtn.onclick = () => showMemoryModal(beach);
+            if (viewMemoriesBtn) viewMemoriesBtn.onclick = () => showPhotoGallery(beach);
+
             // Populate content
-            bottomSheetContent.innerHTML = createPopupContent(beach);
+            bottomSheetContent.innerHTML = '';
+            bottomSheetContent.appendChild(content);
 
             // Expand sheet
             infoPanel.classList.add('expanded');
             infoPanel.classList.add('has-selection');
-
-            // Attach event listeners to the new buttons in the bottom sheet
-            setTimeout(() => {
-                const addMemoryBtn = bottomSheetContent.querySelector('.add-memory-btn');
-                const viewMemoriesBtn = bottomSheetContent.querySelector('.view-memories-btn');
-                if (addMemoryBtn) addMemoryBtn.onclick = () => showMemoryModal(beach);
-                if (viewMemoriesBtn) viewMemoriesBtn.onclick = () => showPhotoGallery(beach);
-            }, 100);
 
         } else {
             // Desktop: Use default Popup (already bound, just open)
@@ -244,7 +246,7 @@ function initializeMap(beachesData) {
 
     // Add a single keyboard event listener for map navigation
     document.addEventListener('keydown', function(e) {
-        if (map && map.isFocused()) {
+        if (map && document.activeElement === map.getContainer()) {
             switch(e.key) {
                 case 'ArrowUp':
                     map.panBy([0, -50]);
@@ -270,31 +272,3 @@ function initializeMap(beachesData) {
     });
 }
 
-/**
- * Filters map markers and sidebar list items by beach type.
- * @param {string} type - The type of beach to filter by (all, popular, serene, adventure).
- */
-function filterMarkers(type) {
-    // Filter Map Markers
-    beachMarkers.forEach(marker => {
-        if (type === 'all' || marker.beachData.type === type) {
-            if (!map.hasLayer(marker)) {
-                marker.addTo(map);
-            }
-        } else {
-            if (map.hasLayer(marker)) {
-                map.removeLayer(marker);
-            }
-        }
-    });
-
-    // Filter Sidebar List Items
-    const listItems = document.querySelectorAll('.beach-card');
-    listItems.forEach(item => {
-        if (type === 'all' || item.classList.contains(type)) {
-            item.style.display = 'flex';
-        } else {
-            item.style.display = 'none';
-        }
-    });
-}
