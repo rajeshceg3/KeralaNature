@@ -338,7 +338,7 @@ function addMemory(beach) {
     const file = photoInput.files[0];
 
     if (file && noteInput.value.trim() !== '') {
-        resizeImage(file, 800, 0.7)
+        resizeImage(file, 600, 0.6)
             .then(resizedImage => {
                 const newMemory = {
                     photo: resizedImage,
@@ -362,7 +362,7 @@ function addMemory(beach) {
                     noteInput.value = '';
                 } catch (error) {
                     console.error('Storage failed:', error);
-                    alert('Failed to save memory. Your local storage might be full.');
+                    alert('Failed to save memory. Your browser storage is full. Please try a smaller photo or delete old memories.');
                     beach.memories.pop(); // Revert
                 }
             })
