@@ -1,6 +1,6 @@
 // Service Worker for caching static assets
 
-const CACHE_NAME = 'kerala-beaches-cache-v3';
+const CACHE_NAME = 'kerala-beaches-cache-v4';
 const urlsToCache = [
     '/',
     '/index.html',
@@ -8,6 +8,11 @@ const urlsToCache = [
     '/map.js',
     '/ui.js',
     '/beaches.json',
+    '/vendor/maplibre/maplibre-gl-csp.js',
+    '/vendor/maplibre/maplibre-gl-csp-worker.js',
+    '/vendor/maplibre/leaflet-maplibre-gl.js',
+    '/vendor/maplibre/maplibre-gl.css',
+    '/vendor/warm-map/style.js',
     'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css',
     'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js',
     'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;600;700&display=swap',
@@ -29,7 +34,7 @@ self.addEventListener('fetch', event => {
     const requestUrl = new URL(event.request.url);
 
     // Strategy for map tiles: Cache first, then network
-    if (requestUrl.hostname.endsWith('tile.openstreetmap.org') || requestUrl.hostname.includes('cartocdn.com')) {
+    if (requestUrl.hostname.endsWith('tile.openstreetmap.org') || requestUrl.hostname.includes('cartocdn.com') || requestUrl.hostname === 'tiles.openfreemap.org') {
         event.respondWith(
             caches.match(event.request).then(response => {
                 return response || fetch(event.request).then(fetchResponse => {

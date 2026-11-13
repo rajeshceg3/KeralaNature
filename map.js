@@ -8,9 +8,9 @@ function initializeMap(beachesData) {
         center: [10.8505, 76.2711], // Default center (Kerala)
         zoom: 7,                    // Default zoom
         zoomControl: false, // Disable default zoom control to add custom one
-        attributionControl: false, // Disable default attribution
+        attributionControl: false, // Custom attribution added below (OpenFreeMap/OSM)
         fadeAnimation: true, // Smooth fade animations for map tiles
-        zoomAnimation: true, // Smooth zoom animations
+        zoomAnimation: false, // Required for the MapLibre GL basemap bridge
         markerZoomAnimation: true // Smooth marker zoom animations
     });
 
@@ -55,14 +55,12 @@ function initializeMap(beachesData) {
         }
     });
 
-    // Add CartoDB Voyager tile layer for a more polished look
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-        subdomains: 'abcd',
-        maxZoom: 20,
-        opacity: 0.9,
-        className: 'custom-tiles' // Custom class for potential future styling
-    }).addTo(map);
+    // Warm paper basemap (worlds shared module): OpenFreeMap vector tiles,
+    // custom watercolor-wash style. Free public instance, no API key.
+    maplibregl.setWorkerUrl('vendor/maplibre/maplibre-gl-csp-worker.js');
+    L.maplibreGL({style: window.WARM_MAP_STYLE}).addTo(map);
+    L.control.attribution({position: 'bottomright', prefix: false}).addTo(map);
+    map.attributionControl.addAttribution('<a href="https://openfreemap.org" target="_blank">OpenFreeMap</a> <a href="https://www.openmaptiles.org/" target="_blank">&copy; OpenMapTiles</a> Data from <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a>');
 
     // Define color scheme for different beach types
     // NOTE: These must be 6-digit HEX codes for the alpha transparency (DD) to work correctly below.
