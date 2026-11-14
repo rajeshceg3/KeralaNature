@@ -1056,3 +1056,43 @@ h1, h2, h3, h4, h5, h6 {
     left: 0;
     color: var(--color-primary);
 }
+
+/* Coastal Explorer: tools stay behind an explicit disclosure, not a peek sheet. */
+.coast-heading {position:fixed;z-index:1000;top:max(16px,env(safe-area-inset-top));left:20px;display:flex;flex-direction:column;align-items:flex-start;gap:10px;color:var(--color-primary);font-family:var(--font-display);font-size:20px;pointer-events:none}
+.coast-heading > span {background:rgba(255,255,255,.9);padding:8px 12px;border-radius:4px}
+.coast-heading button,.location-tools button {font:500 14px var(--font-body);min-height:44px;padding:10px 16px;border:1px solid #b9d0d0;border-radius:12px;background:#f5faf9;color:#0f4c5c;cursor:pointer;pointer-events:auto}
+.coast-heading button span {margin-left:12px}
+.sidebar {position:fixed;inset:128px auto 36px 20px;width:360px;height:auto;max-width:calc(100% - 40px);padding:22px;background:rgba(247,252,250,.98);border:1px solid #cfdfdb;border-radius:20px;overflow:auto;transform:none;display:none;pointer-events:auto;z-index:1100;animation:none}
+.sidebar.is-open {display:flex}
+.sidebar-header {position:relative;inset:auto;width:100%;min-width:0;max-width:none;transform:none;background:none;border:0;border-radius:0;padding:0;box-shadow:none;text-align:left;display:block;margin-bottom:12px;backdrop-filter:none;animation:none}
+.sidebar-header h1 {font-size:24px;white-space:normal;margin:0 44px 14px 0}
+.sidebar-header p {display:block;font-size:14px;line-height:1.55;margin-bottom:14px}
+.sidebar-header .header-stats,.sidebar-header > .header-content-inner > p:first-of-type {display:none}
+.search-container {margin:0 0 12px}.search-bar {min-height:44px}
+.location-tools {display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px}
+#location-status,#result-count {font-size:13px;line-height:1.5;color:#415c62;margin:8px 0}
+.legend {display:flex;flex-wrap:wrap;gap:6px;padding:12px 0;margin:0 0 12px;overflow:visible;flex-shrink:0}
+.legend-item {min-height:44px;margin:0;padding:10px;font-size:13px;transform:none!important;border:1px solid #d3e0dc}
+.legend-icon {margin-right:6px;width:8px;height:8px}.legend-text{font-size:13px}
+#beach-list-container {display:block}.beach-list-title{font-size:16px}.beach-card{min-height:52px;margin-bottom:6px}
+.map-container {padding-left:0}.sheet-close {position:sticky;top:0;float:right;z-index:2;width:44px;height:44px;border:1px solid #cadbd6;border-radius:50%;background:#f7fcfa;color:#0f4c5c;font:24px var(--font-body);cursor:pointer}
+#explorer-close {position:absolute;right:0;top:0}
+.info-panel {display:none;position:fixed;left:20px;bottom:36px;width:380px;max-width:calc(100% - 40px);max-height:calc(100dvh - 164px);overflow:auto;padding:18px;background:#f6fbf8;border:1px solid #cfdfdb;border-radius:20px;z-index:1101;transform:none!important;animation:none;transition:none;margin:0;pointer-events:auto}
+.info-panel.expanded {display:block}.info-panel::before,.info-panel > h3,.info-panel > .generic-intro {display:none}.info-panel p{display:block}
+#bottom-sheet-content {clear:both}.popup-hero-image{max-width:100%}.weather-widget{font-size:13px;flex-shrink:0}.weather-widget small{font-size:10px;white-space:normal}
+.leaflet-control-zoom a {width:44px!important;height:44px!important;line-height:44px!important}
+.leaflet-control-attribution {position:relative;font-size:10px!important;line-height:1.35!important;max-width:calc(100vw - 20px);padding:4px 6px!important;background:rgba(255,255,255,.94)!important}
+.leaflet-popup-content {max-height:65dvh;overflow:auto;margin:24px 18px!important;max-width:calc(100vw - 64px)}
+.leaflet-container a.leaflet-popup-close-button {width:44px;height:44px;line-height:44px;font-size:22px;background:#f6fbf8;border-radius:50%}
+.custom-marker .pin-wrapper{margin:2px}.beach-actions button {min-height:44px}
+.photo-gallery-modal,.memory-modal{z-index:2000}.photo-gallery-content,.memory-modal-content{width:calc(100% - 24px);max-height:calc(100dvh - 40px);overflow:auto;margin:20px auto}
+.close-gallery,.close-memory-modal{display:inline-flex;align-items:center;justify-content:center;min-width:44px;min-height:44px}
+button:focus-visible,[role=button]:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible {outline:3px solid #36746e;outline-offset:3px}
+@media(max-width:768px){.coast-heading{left:12px;font-size:17px}.coast-heading>span{max-width:calc(100vw - 80px)}.sidebar{inset:124px 12px 38px;width:auto;max-width:none;padding:18px}.info-panel{left:12px;bottom:38px;width:calc(100% - 24px);max-width:none;max-height:calc(100dvh - 164px)}.header-content-inner{width:100%}.leaflet-top.leaflet-right{top:6px}.leaflet-popup{display:none}}
+@media(prefers-reduced-motion:reduce){.sidebar,.info-panel,.coast-heading button,.beach-card,.legend-item{animation:none!important;transition:none!important}}
+
+.close-gallery,.close-memory-modal{border:1px solid #cadbd6;border-radius:50%;background:#f6fbf8;cursor:pointer}
+
+.sidebar.is-open{display:block}#explorer-close{position:sticky;top:0;float:right;right:auto;margin-left:4px}.sidebar-header{clear:none}.legend-item{min-width:44px}.info-panel.has-selection .popup-header h3{display:block;margin:0}.beach-popup{min-width:0}.remove-itinerary-btn{min-width:44px;min-height:44px}.weather-widget{display:block;max-width:150px;line-height:1.4}
+
+.info-panel .popup-header h3{color:#fff}

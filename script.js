@@ -53,8 +53,9 @@ document.addEventListener('DOMContentLoaded', function() {
             currentFilter = button.dataset.filter;
 
             // Update active state
-            document.querySelectorAll('.legend-item').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.legend-item').forEach(btn => { btn.classList.remove('active'); btn.setAttribute('aria-pressed', 'false'); });
             button.classList.add('active');
+            button.setAttribute('aria-pressed', 'true');
 
             updateUI();
         });
@@ -102,7 +103,8 @@ function updateUI() {
  */
 function loadMemories() {
     beaches.forEach(beach => {
-        const storedMemories = localStorage.getItem(beach.name);
+        let storedMemories;
+        try { storedMemories = localStorage.getItem(beach.name); } catch (_) { beach.memories = []; return; }
         if (storedMemories) {
             try {
                 const parsed = JSON.parse(storedMemories);
@@ -128,10 +130,12 @@ function loadMemories() {
  * Loads itinerary from local storage.
  */
 function loadItinerary() {
-    const storedItinerary = localStorage.getItem('kerala_beach_itinerary');
+    let storedItinerary;
+    try { storedItinerary = localStorage.getItem('kerala_beach_itinerary'); } catch (_) { itinerary = []; return; }
     if (storedItinerary) {
         try {
-            itinerary = JSON.parse(storedItinerary);
+            const parsed = JSON.parse(storedItinerary);
+            itinerary = Array.isArray(parsed) ? parsed.filter(name => beaches.some(b => b.name === name)) : [];
         } catch (e) {
             console.error('Error parsing itinerary:', e);
             itinerary = [];
@@ -143,7 +147,8 @@ function loadItinerary() {
  * Saves itinerary to local storage.
  */
 function saveItinerary() {
-    localStorage.setItem('kerala_beach_itinerary', JSON.stringify(itinerary));
+    try { localStorage.setItem('kerala_beach_itinerary', JSON.stringify(itinerary)); }
+    catch (_) { document.getElementById('location-status').textContent = 'Browser storage is unavailable. This itinerary lasts until you reload.'; }
     renderItineraryList();
 }
 
@@ -209,6 +214,7 @@ function renderItineraryList() {
 
         // Click to fly to beach
         const handleBeachClick = () => {
+            window.closeBeachExplorer?.(false);
             if (window.innerWidth > 768 && map) {
                 map.flyTo([beach.lat, beach.lng], 14, { animate: true, duration: 1.5 });
                 map.once('moveend', () => {

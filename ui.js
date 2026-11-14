@@ -53,7 +53,7 @@ function createPopupContent(beach) {
     const itineraryBtnClass = isInItinerary ? 'action-btn itinerary-btn active' : 'action-btn itinerary-btn';
 
     // Image HTML
-    const imageHtml = beach.imageUrl ?
+    const imageHtml = beach.imageUrl && !beach.imageUrl.includes('placehold.co') ?
         `<img src="${beach.imageUrl}" alt="${sanitizeHTML(beach.name || 'Beach image')}" class="popup-hero-image">` : '';
 
     const container = document.createElement('div');
@@ -64,7 +64,7 @@ function createPopupContent(beach) {
                 <div style="display:flex; justify-content:space-between; align-items:flex-start;">
                     <h3 style="margin-right: 10px;">${sanitizeHTML(beach.name)}</h3>
                     <div class="weather-widget">
-                        <i class="ph ${weather.icon}"></i> ${weather.temp}°C
+                        <i class="ph ${weather.icon}" aria-hidden="true"></i> ${weather.temp}°C<br><small>Illustrative, not live</small>
                     </div>
                 </div>
             </div>
@@ -303,16 +303,9 @@ function showMemoryModal(beach) {
     }, 100);
 }
 
-function showGeolocationError() {
-    const mapContainer = document.getElementById('map');
-    const errorNotification = document.createElement('div');
-    errorNotification.className = 'geolocation-error';
-    errorNotification.textContent = 'Could not determine your location. Showing default map view.';
-    mapContainer.appendChild(errorNotification);
-
-    setTimeout(() => {
-        errorNotification.remove();
-    }, 5000);
+function showGeolocationError(error) {
+    const status = document.getElementById('location-status');
+    status.textContent = error?.code === 1 ? 'Location permission is off. You can still explore every beach. To try again, allow location in your browser settings.' : 'Location is unavailable. You can still explore every beach or try again.';
 }
 
 /**
@@ -324,6 +317,8 @@ function renderBeachList(beaches) {
     if (!listContainer) return;
 
     listContainer.innerHTML = '';
+    const count = document.getElementById('result-count');
+    if (count) count.textContent = beaches.length ? `${beaches.length} beaches` : 'No beaches match. Try another search or reset filters.';
 
     beaches.forEach(beach => {
         const item = document.createElement('div');
@@ -341,6 +336,8 @@ function renderBeachList(beaches) {
 
         // Interaction
         const handleClick = () => {
+            window.closeBeachExplorer?.(false);
+            if (window.innerWidth <= 768) window.openBeachDetails?.(beach);
             if (window.innerWidth > 768 && map) {
                 const targetLatLng = L.latLng(beach.lat, beach.lng);
                 // Check if we are reasonably close (2km) to avoid long flyTo or if already there

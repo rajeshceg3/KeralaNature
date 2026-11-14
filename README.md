@@ -40,3 +40,14 @@ To run this page locally, you need a simple HTTP server. You can use Python's bu
 This project uses a service worker to provide offline capabilities. The service worker caches all the static assets of the page, including the HTML, CSS, JavaScript, and images. This means that once you have visited the page, you can access it again even if you are offline.
 
 To see the service worker in action, you can use the "Offline" option in the "Network" tab of your browser's developer tools.
+## Mobile coastal controls (14 November 2026)
+
+Beaches opens the coastal Explorer explicitly. Search, four filters, reset, optional location, the complete beach list and the device-local itinerary are in that panel. Mobile beach stories scroll independently with a reachable close button. Escape and focus return are supported; closed panels are inert. Map credits stay visible.
+
+Location is never requested at startup. Use my location retains the existing location flight, and permission failures are explained within the panel without blocking the coast. The map style, coordinates, initial camera and flight parameters are unchanged.
+
+Two reliability repairs are separate from layout: entrance animation now targets the inner marker artwork, so it cannot overwrite Leaflet's placement transform; denied/corrupt browser storage no longer prevents the app from booting. Existing marker pulse timing/appearance remains unchanged. The deterministic weather widget is marked illustrative, not live. Title-only placeholder images are not shown as beach photography.
+
+Verification: `npm ci`, then `npx playwright install chromium` and `node verify-mobile.cjs`. Set `CHROME_PATH` to use a system browser. The suite checks all 15 beaches at 320/390/1280px, search/filters/reset, denied location, no startup location request, story bounds and close, keyboard Escape/focus, overflow and page errors. `REDUCED=1 node verify-mobile.cjs` repeats with reduced-motion preference. `URL=https://keralanature.pages.dev/ node verify-mobile.cjs` checks production. Screenshots go to `verification/` by default; `SCREENSHOT_DIR` overrides that. The pre-existing boot-only check remains in `.cursor/skills/verify-kerala-nature/`.
+
+Remaining separate design debt: the large colorful pulsing map pins and unverified guide ratings/review counts are inherited data/presentation, not a new live travel-data claim. They were not redesigned in the controls lane.

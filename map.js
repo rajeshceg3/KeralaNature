@@ -14,46 +14,10 @@ function initializeMap(beachesData) {
         markerZoomAnimation: true // Smooth marker zoom animations
     });
 
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-            (position) => {
-                const { latitude, longitude } = position.coords;
-                map.flyTo([latitude, longitude], 9, {
-                    animate: true,
-                    duration: 2
-                });
-            },
-            () => {
-                showGeolocationError();
-            }
-        );
-    } else {
-        showGeolocationError();
-    }
-
     // Add custom zoom control to the top right
     L.control.zoom({
         position: 'topright'
     }).addTo(map);
-
-    // Handle map clicks to close bottom sheet on mobile
-    map.on('click', function() {
-        if (window.innerWidth <= 768) {
-            const infoPanel = document.getElementById('infoPanel');
-            const bottomSheetContent = document.getElementById('bottom-sheet-content');
-
-            if (infoPanel.classList.contains('expanded')) {
-                infoPanel.classList.remove('expanded');
-                infoPanel.classList.remove('has-selection');
-                // Optional: Clear content after animation
-                setTimeout(() => {
-                   if (!infoPanel.classList.contains('expanded')) {
-                       bottomSheetContent.innerHTML = '';
-                   }
-                }, 400);
-            }
-        }
-    });
 
     // Warm paper basemap (worlds shared module): OpenFreeMap vector tiles,
     // custom watercolor-wash style. Free public instance, no API key.
@@ -114,14 +78,16 @@ function initializeMap(beachesData) {
                     </div>
                 </div>
             `,
-            iconSize: [40, 40],
-            iconAnchor: [20, 40], // Point of the icon which will correspond to marker's location
+            iconSize: [44, 44],
+            iconAnchor: [22, 42], // Point of the icon which will correspond to marker's location
             popupAnchor: [0, -45] // Point from which the popup should open relative to the iconAnchor
         });
     }
 
     // Function to handle opening details
     function openBeachDetails(beach) {
+        window.closeBeachExplorer?.(false);
+        window.prepareBeachStory?.();
         if (window.innerWidth <= 768) {
             // Mobile: Use Bottom Sheet
             const bottomSheetContent = document.getElementById('bottom-sheet-content');
@@ -143,12 +109,16 @@ function initializeMap(beachesData) {
             // Expand sheet
             infoPanel.classList.add('expanded');
             infoPanel.classList.add('has-selection');
+            infoPanel.inert = false; infoPanel.setAttribute('aria-hidden', 'false');
+            requestAnimationFrame(() => document.getElementById('detail-close').focus());
 
         } else {
             // Desktop: Use default Popup (already bound, just open)
             // Logic handled by Leaflet's bindPopup
         }
     }
+
+    window.openBeachDetails = openBeachDetails;
 
     // Iterate over each beach and add a marker to the map
     beaches.forEach((beach, index) => {
@@ -167,7 +137,7 @@ function initializeMap(beachesData) {
         const popup = L.popup({
             maxWidth: 320,
             minWidth: 300,
-            closeButton: false, // Cleaner look
+            closeButton: true, // Cleaner look
             className: 'custom-popup'
         }).setContent(createPopupContent(beach));
 
@@ -222,7 +192,10 @@ function initializeMap(beachesData) {
         // Add subtle entrance animation to all markers after map is ready
         setTimeout(() => {
             const markerElements = document.querySelectorAll('.custom-marker');
-            markerElements.forEach((markerEl, index) => {
+            markerElements.forEach((markerRoot, index) => {
+                // Animate the inner artwork, never Leaflet's positioning transform.
+                const markerEl = markerRoot.querySelector('.pin-wrapper');
+                if (!markerEl) return;
                 // Staggered entrance
                 markerEl.style.opacity = '0';
                 markerEl.style.animation = 'popupSlideIn 0.6s forwards cubic-bezier(0.34, 1.56, 0.64, 1)';
