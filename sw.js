@@ -1,12 +1,14 @@
 // Service Worker for caching static assets
 
-const CACHE_NAME = 'kerala-beaches-cache-v4';
+const CACHE_NAME = 'kerala-beaches-cache-v5';
 const urlsToCache = [
     '/',
     '/index.html',
     '/script.js',
     '/map.js',
     '/ui.js',
+    '/coast-controls.js',
+    '/style.css',
     '/beaches.json',
     '/vendor/maplibre/maplibre-gl-csp.js',
     '/vendor/maplibre/maplibre-gl-csp-worker.js',
